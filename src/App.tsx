@@ -12,18 +12,14 @@ export default function App() {
     <main className="archive-scene" inert={selection ? true : undefined}>
       <div className="ambient-light" aria-hidden="true" />
       <div className="archive-mark" aria-hidden="true"><span /> <span /> <span /></div>
-      <p className="corner-note mono">A collection, kept close.</p>
       <PosterWall items={screen} onOpen={setSelection} />
       <div className="heading-scrim" aria-hidden="true" />
       <header className="scene-header text-center">
-        <p className="eyebrow mono">A personal archive</p>
         <TypedTitle />
         <p className="collection-count mono">{books.length} books <span>·</span> {screen.length} screen titles</p>
       </header>
       <BookShelf items={books} onOpen={setSelection} />
-      <div className="scene-colophon"><span className="tiny-star" aria-hidden="true">✳</span><p>Some worlds stay with you.</p></div>
       <footer className="scene-footer">
-        <span className="mono">Collected by Hoang</span>
         <details className="credits">
           <summary className="mono">Notes & credits</summary>
           <div className="credits-content">

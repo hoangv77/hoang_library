@@ -17,6 +17,5 @@ export function PosterWall({ items, onOpen }: { items: ScreenTitle[]; onOpen: (s
       </div>)}</div>
       {!items.length && <p className="empty-collection">The wall is waiting for its first frame.</p>}
     </div>
-    <div className="wall-caption mono"><span>On the wall</span><span>Films & television · drag to explore</span></div>
   </section>;
 }

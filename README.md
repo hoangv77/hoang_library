@@ -1,4 +1,4 @@
-# Between pages and screens
+# hoang's library
 
 A single scene for Hoang's personal library and screen collection. React 19,
 TypeScript, Tailwind CSS 4, Vite, and CSS 3D transforms. All collection metadata

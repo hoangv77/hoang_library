@@ -7,7 +7,6 @@ export function BookShelf({ items, onOpen }: { items: Book[]; onOpen: (s: Select
   const loop = items.reduce((n, b) => n + b.width + 2, 0) > 2600;
   const rail = useHorizontalRail(loop, true);
   return <section className="bookshelf" aria-label="Bookshelf">
-    <div className="shelf-caption"><span className="mono">The bookshelf</span><span className="mono browse-hint">Drag to wander · select to open</span></div>
     <div ref={rail} className="book-rail horizontal-rail" tabIndex={0} aria-label="Browse books. Swipe, scroll, or use left and right arrow keys.">
       <div className="book-row">
         {(loop ? [0, 1, 2] : [0]).map(copy => <div className="book-segment" key={copy}>

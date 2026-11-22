@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const title = 'Between pages and screens.';
+const title = "hoang's library";
 export function TypedTitle() {
   const [length, setLength] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches ? title.length : 0);
   useEffect(() => {
