@@ -24,3 +24,9 @@ coverage/
 dist/
 build/
 *.log
+
+# Personal exports and import caches (generated public data lives in src/data)
+*.csv
+.cache/
+artifacts/
+*.tsbuildinfo
