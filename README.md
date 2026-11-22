@@ -19,6 +19,27 @@ The public archive needs no sign-in. Optional Supabase Auth and a small override
 table support private owner editing. There is no search, tracking, public
 registration, or separate administration dashboard.
 
+## Edit locally
+
+With Supabase configuration left blank, `npm run dev` enables local editing
+without sign-in. Choose **Edit collection** in the footer, open a book or screen
+title, change its favorite, personal comment, or personal rating, and select
+**Save changes**. **Finish editing** returns to browsing. Cancel discards the
+current draft; saving reports success only after the file write succeeds.
+
+Changes persist in [src/data/personal-overrides.json](src/data/personal-overrides.json),
+separately from generated imports. Reloading the page or restarting the server
+keeps them. This file is intentionally tracked public collection data: review
+and commit it when you want those edits included in a deployment. A static build
+includes the saved snapshot and is read-only until Supabase is configured.
+Edits made after a build require another build to appear in that deployment.
+
+Local file editing runs only on Vite's development server at a loopback address.
+`npm run preview` and deployed builds have no local write endpoint. Leave both
+`VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` unset for local editing;
+when configured, the app uses the existing Supabase owner sign-in flow instead.
+An incomplete/invalid Supabase configuration stays read-only.
+
 ## Update the collection
 
 Keep raw exports outside the repository (all CSV files are ignored). Copy
@@ -86,10 +107,13 @@ scale and are separate from IMDb community ratings. Every detail view includes
 
 ## Optional owner setup
 
-Supabase setup has intentionally been left for later. Without its configuration,
-the existing archive works in read-only mode using imported metadata and ratings.
-Favorites default to false, missing comments display N/A, and **Owner access**
-explains the required setup. There is no simulated login or local-only save mode.
+Supabase setup has intentionally been left for later; see
+[TODO_SUPABASE.md](TODO_SUPABASE.md) for the remaining deployment work. Local
+development can edit the file described above. Without Supabase configuration,
+production builds show the imported collection plus the saved file snapshot in
+read-only mode, and **Owner access** explains the required setup. Once connected,
+Supabase rows take precedence over matching file snapshot rows. Titles without
+an override retain imported ratings, no favorite, and N/A comments.
 
 1. Create or select a Supabase project. Keep only the normal `public` schema
    exposed through its Data API; do not expose `archive_private`.

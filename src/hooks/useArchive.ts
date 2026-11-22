@@ -5,8 +5,9 @@ import type { ArchiveBackend } from '../lib/archiveBackend';
 import { mergeCollections, overrideKey, type MediaOverride } from '../lib/personalization';
 
 export type OwnerStatus = 'signed-out' | 'checking' | 'owner' | 'other' | 'error';
-export function useArchive(baseBooks: Book[], baseScreen: ScreenTitle[], backend: ArchiveBackend | null) {
-  const [overrides, setOverrides] = useState<MediaOverride[]>([]);
+export function useArchive(baseBooks: Book[], baseScreen: ScreenTitle[], backend: ArchiveBackend | null, snapshot: MediaOverride[] = []) {
+  const [overrides, setOverrides] = useState<MediaOverride[]>(snapshot);
+  const baseline = useRef(snapshot);
   const [loadError, setLoadError] = useState('');
   const [readAttempt, setReadAttempt] = useState(0);
   const [overridesReady, setOverridesReady] = useState(!backend);
@@ -23,7 +24,7 @@ export function useArchive(baseBooks: Book[], baseScreen: ScreenTitle[], backend
     let current = true;
     backend.readOverrides().then(rows => { if (current) {
       // A slow read must not overwrite a save that has already been confirmed.
-      setOverrides([...rows.filter(row => !confirmedWrites.current.has(overrideKey(row.media_type, row.media_id))), ...confirmedWrites.current.values()]);
+      setOverrides([...baseline.current, ...rows.filter(row => !confirmedWrites.current.has(overrideKey(row.media_type, row.media_id))), ...confirmedWrites.current.values()]);
       setOverridesReady(true); setLoadError('');
     } })
       .catch(() => { if (current) setLoadError('Personal notes are temporarily unavailable. The imported collection is still available.'); });

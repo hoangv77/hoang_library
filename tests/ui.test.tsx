@@ -17,9 +17,44 @@ import { screen } from '../src/data/screen';
 import { useArchive } from '../src/hooks/useArchive';
 import { mergeCollections, type MediaOverride } from '../src/lib/personalization';
 import { TestBackend } from './helpers/backend';
+import { createLocalBackend } from '../src/lib/localBackend';
 
 afterEach(() => { cleanup(); document.body.innerHTML = ''; });
 const makeRow = (change: Partial<MediaOverride> = {}): MediaOverride => ({ media_type: 'book', media_id: books[0].id, is_favorite: true, personal_comment: 'My note', rating_is_overridden: true, personal_rating: 5, ...change });
+
+test('file snapshots appear in read-only builds and remote rows override matching snapshot IDs', async () => {
+  const snapshot = [makeRow()];
+  const readOnly = renderHook(() => useArchive(books, screen, null, snapshot));
+  assert.equal(readOnly.result.current.books[0].personalComment, 'My note');
+  assert.equal(readOnly.result.current.books[0].isFavorite, true);
+  assert.equal(readOnly.result.current.editMode, false);
+  await assert.rejects(readOnly.result.current.save(makeRow()), /Sign in/);
+  readOnly.unmount();
+  const backend = new TestBackend();
+  backend.rows.set(`book:${books[0].id}`, makeRow({ personal_comment: 'Cloud note', is_favorite: false }));
+  const cloud = renderHook(() => useArchive(books, screen, backend, snapshot));
+  await waitFor(() => assert.equal(cloud.result.current.books[0].personalComment, 'Cloud note'));
+  assert.equal(cloud.result.current.books[0].isFavorite, false);
+});
+
+test('local backend unlocks the existing editor without a sign-in step', async () => {
+  let saved: MediaOverride[] = [];
+  const local = createLocalBackend(async (_input, init) => {
+    if (init?.method === 'POST') { saved = [JSON.parse(init.body as string)]; return Response.json(saved[0]); }
+    return Response.json({ overrides: saved, token: 'test-only-local-token' });
+  });
+  const archive = renderHook(() => useArchive(books, screen, local));
+  await waitFor(() => assert.equal(archive.result.current.ownerStatus, 'owner'));
+  await waitFor(() => assert.equal(archive.result.current.overridesReady, true));
+  act(() => archive.result.current.setEditMode(true));
+  assert.equal(archive.result.current.editMode, true);
+  await act(async () => { await archive.result.current.save(makeRow()); });
+  assert.equal(archive.result.current.books[0].personalComment, 'My note');
+  archive.unmount();
+  const reload = renderHook(() => useArchive(books, screen, local));
+  await waitFor(() => assert.equal(reload.result.current.books[0].personalComment, 'My note'));
+  assert.equal(reload.result.current.editMode, false);
+});
 
 test('book ratings render one through five filled SVG stars and accessible values', () => {
   for (let rating = 1; rating <= 5; rating++) {

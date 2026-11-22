@@ -1,5 +1,11 @@
 # Phase 2 delivery notes
 
+Subsequent local editing update: development now saves directly to
+`src/data/personal-overrides.json` without sign-in. Production remains read-only
+until Supabase is configured. See [current local instructions](../README.md#edit-locally)
+and [the deferred Supabase checklist](../TODO_SUPABASE.md). The record below
+describes the original Phase 2 delivery.
+
 Starting revision: `7fd43db0a2f436f415fad6e2ecfc15983f3d8018`.
 Work branch: `codex/archive-personalization`, created after fetching and
 fast-forwarding the clean local main to the latest remote main.

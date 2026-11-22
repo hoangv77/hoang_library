@@ -29,4 +29,5 @@ build/
 *.csv
 .cache/
 artifacts/
+src/data/personal-overrides.json.*.tmp
 *.tsbuildinfo

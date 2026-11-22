@@ -6,13 +6,17 @@ import { PosterWall } from './components/screen/PosterWall';
 import { TypedTitle } from './components/shared/TypedTitle';
 import { DetailOverlay, type Selection } from './components/shared/DetailOverlay';
 import { useArchive } from './hooks/useArchive';
-import { archiveBackend, configurationError } from './lib/supabase';
+import { archiveBackend, configurationError, localEditing } from './lib/supabase';
 import { OwnerAccess } from './components/owner/OwnerAccess';
+import savedOverrides from './data/personal-overrides.json';
+import { validateOverride } from './lib/personalization';
+
+const snapshot = savedOverrides.map(validateOverride);
 
 export default function App() {
   const [selection, setSelection] = useState<Selection | null>(null);
   const [ownerAccess, setOwnerAccess] = useState(false);
-  const archive = useArchive(importedBooks, importedScreen, archiveBackend);
+  const archive = useArchive(importedBooks, importedScreen, archiveBackend, snapshot);
   const { books, screen } = archive;
   return <>
     <main className="archive-scene" inert={selection || ownerAccess ? true : undefined}>
@@ -29,8 +33,11 @@ export default function App() {
       <BookShelf items={books} onOpen={setSelection} />
       <footer className="scene-footer">
         <p className="favorite-legend"><span aria-hidden="true" />Personal favorites & highly recommended</p>
-        {archive.editMode && <span className="edit-mode-indicator mono" role="status">Edit mode</span>}
-        <button className="owner-access-link mono" onClick={() => setOwnerAccess(true)}>Owner access</button>
+        {archive.editMode && <span className="edit-mode-indicator mono" role="status">{localEditing ? 'Local edit mode · Saves to file' : 'Edit mode'}</span>}
+        {localEditing
+          ? <button className="owner-access-link mono" disabled={!archive.overridesReady || archive.ownerStatus !== 'owner'} onClick={() => archive.setEditMode(!archive.editMode)}>{archive.editMode ? 'Finish editing' : 'Edit collection'}</button>
+          : <button className="owner-access-link mono" onClick={() => setOwnerAccess(true)}>Owner access</button>}
+        {localEditing && archive.ownerStatus === 'error' && <button className="owner-access-link mono" onClick={archive.recheckOwner}>Retry local access</button>}
         <details className="credits">
           <summary className="mono">Notes & credits</summary>
           <div className="credits-content">
