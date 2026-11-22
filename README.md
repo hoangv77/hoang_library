@@ -98,7 +98,8 @@ returns it to the scene; left/right keys browse details. Dialogs trap focus and
 return it to the original object. Reduced motion replaces the elaborate movement
 with immediate state changes. Missing images have typeset fallbacks.
 
-Golden edges and a restrained glow identify personal favorites; the legend and
+Polished gold poster frames, white reflections, and a fading gold glow identify
+screen favorites; books retain gold accents along their spines. The legend and
 detail labels explain their meaning without depending on color alone. Favorites
 are manually selected and independent of ratings. Books use accessible five-star
 ratings; zero means **Unrated**. Screen personal ratings stay on the ten-point
