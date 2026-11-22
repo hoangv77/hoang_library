@@ -105,6 +105,14 @@ ratings; zero means **Unrated**. Screen personal ratings stay on the ten-point
 scale and are separate from IMDb community ratings. Every detail view includes
 **Personal comments**, with **N/A** when no note has been saved.
 
+On opening, saved screen favorites receive the five lower frames around the
+heading first (center, then left/right), followed by the two upper outside frames.
+Additional favorites extend outward along the looping wall. Favorites use their
+existing collection order as a stable tie-breaker. The arrangement is captured
+after saved notes load and stays fixed during editing; reload to see a new
+arrangement. Poster details always refer to the original title, regardless of
+its display position.
+
 ## Optional owner setup
 
 Supabase setup has intentionally been left for later; see

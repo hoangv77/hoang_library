@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 // One DOM update per frame; scrolling does not rerender every object in the scene.
-export function useHorizontalRail(loop: boolean, curved = false) {
+export function useHorizontalRail(loop: boolean, curved = false, openingKey?: string) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const rail = ref.current; if (!rail) return;
@@ -63,11 +63,18 @@ export function useHorizontalRail(loop: boolean, curved = false) {
     rail.addEventListener('click', click, true); rail.addEventListener('keydown', key); rail.addEventListener('focusin', focus);
     const resize = new ResizeObserver(schedule); resize.observe(rail);
     if (loop) rail.scrollLeft = rail.scrollWidth / 3;
+    if (openingKey) {
+      const anchor = rail.querySelector<HTMLElement>('[data-opening-center="true"]');
+      if (anchor) {
+        const box = anchor.getBoundingClientRect();
+        rail.scrollLeft += box.left - rail.getBoundingClientRect().left + box.width / 2 - rail.clientWidth / 2;
+      }
+    }
     update();
     return () => {
       cancelAnimationFrame(frame); resize.disconnect();
       rail.removeEventListener('wheel', wheel); rail.removeEventListener('scroll', schedule); rail.removeEventListener('pointerdown', down); rail.removeEventListener('pointermove', move); rail.removeEventListener('pointerup', up); rail.removeEventListener('pointercancel', up); rail.removeEventListener('lostpointercapture', up); rail.removeEventListener('click', click, true); rail.removeEventListener('keydown', key); rail.removeEventListener('focusin', focus);
     };
-  }, [loop, curved]);
+  }, [loop, curved, openingKey]);
   return ref;
 }

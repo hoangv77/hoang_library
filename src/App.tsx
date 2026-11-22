@@ -22,7 +22,7 @@ export default function App() {
     <main className="archive-scene" inert={selection || ownerAccess ? true : undefined}>
       <div className="ambient-light" aria-hidden="true" />
       <div className="archive-mark" aria-hidden="true"><span /> <span /> <span /></div>
-      <PosterWall items={screen} onOpen={setSelection} />
+      <PosterWall items={screen} onOpen={setSelection} arrangementReady={archive.overridesReady} />
       <div className="heading-scrim" aria-hidden="true" />
       <header className="scene-header text-center">
         <TypedTitle />
@@ -31,8 +31,11 @@ export default function App() {
         {archive.loadError && <p className="archive-notice" role="status">{archive.loadError} <button onClick={archive.retryLoad}>Try again</button></p>}
       </header>
       <BookShelf items={books} onOpen={setSelection} />
+      <p className="favorite-legend">
+        <span className="favorite-objects" aria-hidden="true"><span className="favorite-mini-frame" /><span className="favorite-mini-book" /></span>
+        <span><strong>Personal favorites</strong><span className="favorite-legend-caption">& highly recommended</span></span>
+      </p>
       <footer className="scene-footer">
-        <p className="favorite-legend"><span aria-hidden="true" />Personal favorites & highly recommended</p>
         {archive.editMode && <span className="edit-mode-indicator mono" role="status">{localEditing ? 'Local edit mode · Saves to file' : 'Edit mode'}</span>}
         {localEditing
           ? <button className="owner-access-link mono" disabled={!archive.overridesReady || archive.ownerStatus !== 'owner'} onClick={() => archive.setEditMode(!archive.editMode)}>{archive.editMode ? 'Finish editing' : 'Edit collection'}</button>

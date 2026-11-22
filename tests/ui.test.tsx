@@ -18,9 +18,37 @@ import { useArchive } from '../src/hooks/useArchive';
 import { mergeCollections, type MediaOverride } from '../src/lib/personalization';
 import { TestBackend } from './helpers/backend';
 import { createLocalBackend } from '../src/lib/localBackend';
+import { arrangePosterWall } from '../src/lib/posterArrangement';
 
 afterEach(() => { cleanup(); document.body.innerHTML = ''; });
 const makeRow = (change: Partial<MediaOverride> = {}): MediaOverride => ({ media_type: 'book', media_id: books[0].id, is_favorite: true, personal_comment: 'My note', rating_is_overridden: true, personal_rating: 5, ...change });
+
+test('poster positions wait for saved favorites, stay fixed during edits, and open the correct source record', () => {
+  const rows = [20, 22, 24, 26, 28, 30, 32].map(index => makeRow({ media_type: 'screen', media_id: screen[index].id }));
+  const saved = mergeCollections(books, screen, rows).screen;
+  let opened = -1;
+  const open = (selection: { index: number }) => { opened = selection.index; };
+  const view = render(<PosterWall items={screen} arrangementReady={false} onOpen={open} />);
+  const order = () => [...view.container.querySelectorAll<HTMLButtonElement>('.poster-target:not([aria-hidden])')].map(button => button.dataset.mediaId);
+  assert.deepEqual(order(), screen.map(item => item.id));
+  view.rerender(<PosterWall items={saved} arrangementReady onOpen={open} />);
+  const initial = order();
+  assert.deepEqual(initial, arrangePosterWall(saved));
+  const centerLower = view.container.querySelector<HTMLButtonElement>('[data-opening-center] .poster-target:nth-child(2)')!;
+  assert.equal(centerLower.dataset.mediaId, screen[20].id);
+  fireEvent.click(centerLower);
+  assert.equal(opened, 20);
+  assert.equal(view.container.querySelectorAll('[data-opening-center]').length, 1);
+  const rail = view.container.querySelector<HTMLDivElement>('.poster-rail')!;
+  rail.scrollLeft = 1234;
+  const edited = saved.map((item, index) => ({ ...item, isFavorite: index === 3 }));
+  view.rerender(<PosterWall items={edited} arrangementReady onOpen={open} />);
+  assert.deepEqual(order(), initial);
+  assert.equal(rail.scrollLeft, 1234);
+  view.unmount();
+  const reopened = render(<PosterWall items={edited} arrangementReady onOpen={open} />);
+  assert.deepEqual([...reopened.container.querySelectorAll<HTMLButtonElement>('.poster-target:not([aria-hidden])')].map(button => button.dataset.mediaId), arrangePosterWall(edited));
+});
 
 test('file snapshots appear in read-only builds and remote rows override matching snapshot IDs', async () => {
   const snapshot = [makeRow()];
