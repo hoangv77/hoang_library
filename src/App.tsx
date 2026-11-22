@@ -1,15 +1,21 @@
 import { useState } from 'react';
-import { books } from './data/books';
-import { screen } from './data/screen';
+import { books as importedBooks } from './data/books';
+import { screen as importedScreen } from './data/screen';
 import { BookShelf } from './components/books/BookShelf';
 import { PosterWall } from './components/screen/PosterWall';
 import { TypedTitle } from './components/shared/TypedTitle';
 import { DetailOverlay, type Selection } from './components/shared/DetailOverlay';
+import { useArchive } from './hooks/useArchive';
+import { archiveBackend, configurationError } from './lib/supabase';
+import { OwnerAccess } from './components/owner/OwnerAccess';
 
 export default function App() {
   const [selection, setSelection] = useState<Selection | null>(null);
+  const [ownerAccess, setOwnerAccess] = useState(false);
+  const archive = useArchive(importedBooks, importedScreen, archiveBackend);
+  const { books, screen } = archive;
   return <>
-    <main className="archive-scene" inert={selection ? true : undefined}>
+    <main className="archive-scene" inert={selection || ownerAccess ? true : undefined}>
       <div className="ambient-light" aria-hidden="true" />
       <div className="archive-mark" aria-hidden="true"><span /> <span /> <span /></div>
       <PosterWall items={screen} onOpen={setSelection} />
@@ -17,9 +23,14 @@ export default function App() {
       <header className="scene-header text-center">
         <TypedTitle />
         <p className="collection-count mono">{books.length} books <span>·</span> {screen.length} screen titles</p>
+        <p className="visitor-guidance"><span className="pointer-guidance">Drag to explore · Select a title for details & personal comments</span><span className="touch-guidance">Swipe to explore · Tap for details & personal comments</span></p>
+        {archive.loadError && <p className="archive-notice" role="status">{archive.loadError} <button onClick={archive.retryLoad}>Try again</button></p>}
       </header>
       <BookShelf items={books} onOpen={setSelection} />
       <footer className="scene-footer">
+        <p className="favorite-legend"><span aria-hidden="true" />Personal favorites & highly recommended</p>
+        {archive.editMode && <span className="edit-mode-indicator mono" role="status">Edit mode</span>}
+        <button className="owner-access-link mono" onClick={() => setOwnerAccess(true)}>Owner access</button>
         <details className="credits">
           <summary className="mono">Notes & credits</summary>
           <div className="credits-content">
@@ -30,6 +41,7 @@ export default function App() {
         </details>
       </footer>
     </main>
-    {selection && <DetailOverlay key={`${selection.kind}-${selection.index}`} selection={selection} books={books} screen={screen} onClose={() => setSelection(null)} onChange={setSelection} />}
+    {selection && <DetailOverlay key={`${selection.kind}-${selection.index}`} selection={selection} books={books} screen={screen} onClose={() => setSelection(null)} onChange={setSelection} canEdit={archive.editMode} save={archive.save} importedRating={selection.kind === 'book' ? importedBooks[selection.index]?.rating : importedScreen[selection.index]?.personalRating} />}
+    {ownerAccess && <OwnerAccess backend={archiveBackend} configurationError={configurationError} status={archive.ownerStatus} ownerError={archive.ownerError} editMode={archive.editMode} onEditMode={archive.setEditMode} recheckOwner={archive.recheckOwner} notesReady={archive.overridesReady} notesError={archive.loadError} retryNotes={archive.retryLoad} onClose={() => setOwnerAccess(false)} />}
   </>;
 }

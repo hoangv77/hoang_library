@@ -1,11 +1,18 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
-import type { Book } from '../../data/books';
-import type { ScreenTitle } from '../../data/screen';
+import type { PersonalBook as Book, PersonalScreenTitle as ScreenTitle } from '../../lib/personalization';
 import { Artwork } from './Artwork';
+import { BookRating } from './BookRating';
+import { PersonalComments } from './PersonalComments';
+import { OwnerEditor } from '../owner/OwnerEditor';
+import type { MediaOverride } from '../../lib/personalization';
+import { trapFocus } from '../../hooks/useDialogFocus';
 
 export type Selection = { kind: 'book' | 'screen'; index: number; rect: DOMRect; element: HTMLButtonElement };
-export function DetailOverlay({ selection, books, screen, onClose, onChange }: { selection: Selection; books: Book[]; screen: ScreenTitle[]; onClose: () => void; onChange: (s: Selection) => void }) {
+export function DetailOverlay({ selection, books, screen, onClose, onChange, canEdit = false, importedRating, save }: {
+  selection: Selection; books: Book[]; screen: ScreenTitle[]; onClose: () => void; onChange: (s: Selection) => void;
+  canEdit?: boolean; importedRating?: number; save?: (value: MediaOverride) => Promise<MediaOverride>;
+}) {
   const book = selection.kind === 'book' ? books[selection.index] : undefined;
   const film = selection.kind === 'screen' ? screen[selection.index] : undefined;
   const item = book ?? film!;
@@ -14,9 +21,12 @@ export function DetailOverlay({ selection, books, screen, onClose, onChange }: {
   const art = useRef<HTMLDivElement>(null), dialog = useRef<HTMLDivElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const returnFocus = useRef(false);
-  const close = () => { if (closing) return; returnFocus.current = true; setClosing(true); setOut(false); closeTimer.current = setTimeout(onClose, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 620); };
+  const navigationGuard = useRef<(() => boolean) | null>(null);
+  const setNavigationGuard = useCallback((guard: (() => boolean) | null) => { navigationGuard.current = guard; }, []);
+  const mayLeave = () => !navigationGuard.current || navigationGuard.current();
+  const close = () => { if (closing || !mayLeave()) return; returnFocus.current = true; setClosing(true); setOut(false); closeTimer.current = setTimeout(onClose, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 620); };
   const navigate = (step: number) => {
-    if (closing) return;
+    if (closing || !mayLeave()) return;
     const length = book ? books.length : screen.length;
     onChange({ ...selection, index: (selection.index + step + length) % length });
   };
@@ -24,11 +34,11 @@ export function DetailOverlay({ selection, books, screen, onClose, onChange }: {
     const target = art.current!.getBoundingClientRect();
     const source = selection.rect;
     const scale = source.height / target.height;
-    setOrigin({ '--origin-x': `${source.left + source.width / 2 - (target.left + target.width / 2)}px`, '--origin-y': `${source.top + source.height / 2 - (target.top + target.height / 2)}px`, '--origin-scale': scale, '--origin-turn': book ? '82deg' : '-4deg' } as CSSProperties);
+    setOrigin({ '--origin-x': `${source.left + source.width / 2 - (target.left + target.width / 2)}px`, '--origin-y': `${source.top + source.height / 2 - (target.top + target.height / 2)}px`, '--origin-scale': scale, '--origin-turn': selection.kind === 'book' ? '82deg' : '-4deg' } as CSSProperties);
     let frame2 = 0;
     const frame1 = requestAnimationFrame(() => { frame2 = requestAnimationFrame(() => setOut(true)); });
     return () => { cancelAnimationFrame(frame1); cancelAnimationFrame(frame2); };
-  }, [selection, book]);
+  }, [selection]);
   useEffect(() => {
     const oldOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden';
     dialog.current?.focus();
@@ -36,15 +46,13 @@ export function DetailOverlay({ selection, books, screen, onClose, onChange }: {
   }, [selection.element]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
+      trapFocus(e, dialog.current!);
       if (e.key === 'Escape') { e.preventDefault(); close(); }
+      // Editing text, selects, and star radios own their arrow keys.
+      if (e.target instanceof Element && e.target.closest('input, textarea, select, [contenteditable="true"], [role="radiogroup"]')) return;
       if (e.key === 'ArrowLeft') { e.preventDefault(); navigate(-1); }
       if (e.key === 'ArrowRight') { e.preventDefault(); navigate(1); }
-      if (e.key === 'Tab') {
-        const controls = Array.from(dialog.current!.querySelectorAll<HTMLElement>('button, a[href]'));
-        const first = controls[0], last = controls.at(-1);
-        if (e.shiftKey && (document.activeElement === first || document.activeElement === dialog.current)) { e.preventDefault(); last?.focus(); }
-        else if (!e.shiftKey && (document.activeElement === last || document.activeElement === dialog.current)) { e.preventDefault(); first?.focus(); }
-      }
     };
     window.addEventListener('keydown', key); return () => window.removeEventListener('keydown', key);
   });
@@ -56,21 +64,24 @@ export function DetailOverlay({ selection, books, screen, onClose, onChange }: {
     <div className="detail-dialog" ref={dialog} role="dialog" aria-modal="true" aria-labelledby="detail-title" tabIndex={-1}>
       <button className="close-detail mono" onClick={close} aria-label="Close details and return to archive"><span aria-hidden="true">×</span> Close</button>
       <div className="detail-layout">
-        <div className={`detail-art ${book ? 'detail-book' : 'detail-poster'}`} ref={art} style={{ ...origin, '--art-color': book?.spine ?? film?.frameColor } as CSSProperties}>
+        <div className={`detail-art ${book ? 'detail-book' : 'detail-poster'} ${item.isFavorite ? 'is-favorite' : ''}`} ref={art} style={{ ...origin, '--art-color': book?.spine ?? film?.frameColor } as CSSProperties}>
           <Artwork key={item.id} src={book?.cover || film?.poster} title={item.title} subtitle={book?.author ?? String(film?.year ?? '')} eager />
           {book && <span className="detail-page-edge" aria-hidden="true" />}
         </div>
         <div className="detail-copy">
           <p className="eyebrow mono">{book ? 'From the bookshelf' : 'From the screen collection'}</p>
+          {item.isFavorite && <p className="favorite-label mono">Personal favorite</p>}
           <h2 id="detail-title">{item.title}</h2>
           {book && <p className="detail-author">{book.author}</p>}
           <p className="detail-facts mono">{[item.year, film ? film.type === 'series' ? 'Television series' : film.type === 'short' ? 'Short film' : 'Film' : book?.originalBinding || book?.binding, film?.type === 'series' ? film.seasons ? `${film.seasons} seasons` : undefined : film?.runtime ? `${film.runtime} min` : book?.pages ? `${book.pages} pages` : undefined].filter(Boolean).join(' · ')}</p>
           <div className="detail-ratings">
-            <div><span className="mono">Personal rating</span><strong>{book ? book.rating ? `${book.rating} / 5` : 'Unrated' : film?.personalRating ? `${film.personalRating} / 10` : 'Unrated'}</strong></div>
+            <div><span className="mono">My rating</span><strong>{book ? <BookRating rating={book.rating} /> : film?.personalRating ? `${film.personalRating} / 10` : 'Unrated'}</strong></div>
             {film?.imdbRating && <div><span className="mono">IMDb community</span><strong>{film.imdbRating} <small>/ 10</small></strong></div>}
           </div>
           {item.genres.length > 0 && <p className="detail-genres">{item.genres.join(' / ')}</p>}
           {(book?.blurb || film?.synopsis) && <p className="detail-description">{plainDescription(book?.blurb || film?.synopsis || '')}</p>}
+          <PersonalComments comment={item.personalComment} />
+          {save && <OwnerEditor type={selection.kind} id={item.id} item={item} rating={book?.rating ?? film?.personalRating} importedRating={importedRating} canEdit={canEdit} save={save} setNavigationGuard={setNavigationGuard} />}
           <dl className="detail-metadata">
             {film?.director?.length ? <><dt>Directed by</dt><dd>{film.director.join(', ')}</dd></> : null}
             {film?.creator?.length ? <><dt>Created by</dt><dd>{film.creator.join(', ')}</dd></> : null}

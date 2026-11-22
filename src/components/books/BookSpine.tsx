@@ -1,8 +1,9 @@
 import { memo, useEffect, useRef, useState, type CSSProperties } from 'react';
-import type { Book } from '../../data/books';
+import type { PersonalBook as Book } from '../../lib/personalization';
 import { Artwork } from '../shared/Artwork';
 import { MetadataTooltip } from '../shared/MetadataTooltip';
 import { faceFont, COVER_W } from './bookFaces';
+import { BookRating } from '../shared/BookRating';
 
 export const BookSpine = memo(function BookSpine({ book, duplicate, onOpen }: { book: Book; duplicate: boolean; onOpen: (rect: DOMRect, element: HTMLButtonElement) => void }) {
   const [rect, setRect] = useState<DOMRect | null>(null);
@@ -11,8 +12,8 @@ export const BookSpine = memo(function BookSpine({ book, duplicate, onOpen }: { 
   const show = (el: HTMLButtonElement) => { clearTimeout(timer.current); setRect(el.getBoundingClientRect()); };
   const hide = () => { timer.current = setTimeout(() => setRect(null), 90); };
   const style = { width: book.width, height: book.height, '--spine': book.spine, '--ink': book.ink, '--band': book.band ?? book.ink, '--lean': `${book.lean}deg`, '--depth': `${book.depth}px`, '--wear': book.wear, '--cover-width': `${COVER_W}px`, fontFamily: faceFont[book.face] } as CSSProperties;
-  return <button data-spine className={`book-target ${book.finish} ${rect ? 'is-hovered' : ''}`} style={style} tabIndex={duplicate ? -1 : 0} aria-hidden={duplicate || undefined}
-    aria-label={`${book.title}, ${book.author}${book.status === 'currently-reading' ? ', currently reading' : ''}. Open book details`}
+  return <button data-spine className={`book-target ${book.finish} ${rect ? 'is-hovered' : ''} ${book.isFavorite ? 'is-favorite' : ''}`} style={style} tabIndex={duplicate ? -1 : 0} aria-hidden={duplicate || undefined}
+    aria-label={`${book.title}, ${book.author}${book.status === 'currently-reading' ? ', currently reading' : ''}${book.isFavorite ? ', personal favorite' : ''}. Open book details`}
     onPointerEnter={e => { if (e.pointerType !== 'touch') show(e.currentTarget); }} onPointerLeave={hide}
     onFocus={e => show(e.currentTarget)} onBlur={() => { clearTimeout(timer.current); setRect(null); }}
     onClick={e => { clearTimeout(timer.current); setRect(null); onOpen(e.currentTarget.getBoundingClientRect(), e.currentTarget); }}>
@@ -29,6 +30,6 @@ export const BookSpine = memo(function BookSpine({ book, duplicate, onOpen }: { 
       <span className="book-cover"><Artwork src={book.cover} title={book.title} subtitle={book.author} /></span>
       <span className="page-block" />{book.binding === 'hardcover' && <span className="headband" />}
     </span>
-    {rect && <MetadataTooltip title={book.title} subtitle={book.author} metadata={[book.year, book.status === 'currently-reading' ? 'Reading now' : undefined, book.rating ? `${book.rating}/5 personal` : undefined].filter(Boolean).join(' · ')} rect={rect} />}
+    {rect && <MetadataTooltip title={book.title} subtitle={book.author} metadata={[book.year, book.status === 'currently-reading' ? 'Reading now' : undefined, book.isFavorite ? 'Personal favorite' : undefined].filter(Boolean).join(' · ')} rect={rect}><BookRating rating={book.rating} compact /></MetadataTooltip>}
   </button>;
 });

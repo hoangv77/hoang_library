@@ -1,9 +1,10 @@
-import type { ScreenTitle } from '../../data/screen';
+import type { PersonalScreenTitle as ScreenTitle } from '../../lib/personalization';
 import type { Selection } from '../shared/DetailOverlay';
 import { useHorizontalRail } from '../../hooks/useHorizontalRail';
 import { FramedPoster } from './FramedPoster';
+import { memo } from 'react';
 
-export function PosterWall({ items, onOpen }: { items: ScreenTitle[]; onOpen: (s: Selection) => void }) {
+export const PosterWall = memo(function PosterWall({ items, onOpen }: { items: ScreenTitle[]; onOpen: (s: Selection) => void }) {
   const loop = items.length > 18;
   const rail = useHorizontalRail(loop);
   // Each pair forms a column; all titles share the same independently browsable wall.
@@ -18,4 +19,4 @@ export function PosterWall({ items, onOpen }: { items: ScreenTitle[]; onOpen: (s
       {!items.length && <p className="empty-collection">The wall is waiting for its first frame.</p>}
     </div>
   </section>;
-}
+});

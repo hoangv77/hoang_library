@@ -1,5 +1,15 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
-export default defineConfig({ plugins: [react(), tailwindcss()] });
+export default defineConfig(({ mode }) => {
+  const environment = loadEnv(mode, process.cwd(), 'VITE_');
+  for (const [name, value] of Object.entries(environment)) {
+    let serviceRole = false;
+    try { serviceRole = JSON.parse(Buffer.from(value.split('.')[1] ?? '', 'base64url').toString()).role === 'service_role'; } catch { /* Not a JWT. */ }
+    if (value && (/TMDB|SERVICE_ROLE|SECRET/i.test(name) || value.startsWith('sb_secret_') || serviceRole)) {
+      throw new Error('A private credential is configured with a VITE_ prefix. Remove it before serving or building.');
+    }
+  }
+  return { plugins: [react(), tailwindcss()] };
+});

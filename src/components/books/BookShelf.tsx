@@ -1,9 +1,10 @@
-import type { Book } from '../../data/books';
+import type { PersonalBook as Book } from '../../lib/personalization';
 import type { Selection } from '../shared/DetailOverlay';
 import { useHorizontalRail } from '../../hooks/useHorizontalRail';
 import { BookSpine } from './BookSpine';
+import { memo } from 'react';
 
-export function BookShelf({ items, onOpen }: { items: Book[]; onOpen: (s: Selection) => void }) {
+export const BookShelf = memo(function BookShelf({ items, onOpen }: { items: Book[]; onOpen: (s: Selection) => void }) {
   const loop = items.reduce((n, b) => n + b.width + 2, 0) > 2600;
   const rail = useHorizontalRail(loop, true);
   return <section className="bookshelf" aria-label="Bookshelf">
@@ -17,4 +18,4 @@ export function BookShelf({ items, onOpen }: { items: Book[]; onOpen: (s: Select
     </div>
     <div className="shelf-surface" aria-hidden="true" /><div className="shelf-ground" aria-hidden="true" />
   </section>;
-}
+});
