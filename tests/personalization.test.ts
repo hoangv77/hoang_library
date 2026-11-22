@@ -8,6 +8,17 @@ import { normalizeBooks } from '../scripts/import-goodreads';
 import { normalizeScreen } from '../scripts/import-imdb';
 
 export const override = (changes: Partial<MediaOverride> = {}): MediaOverride => ({ media_type: 'book', media_id: books[0].id, is_favorite: true, personal_comment: 'A note.\nA second line.', rating_is_overridden: true, personal_rating: 5, ...changes });
+
+test('nonempty saved JSON snapshots validate without assuming a typed media discriminator', () => {
+  // JSON imports infer media_type as string; this also guards the production TypeScript build.
+  const snapshot = [{ media_type: 'screen', media_id: screen[0].id, is_favorite: true,
+    personal_comment: null, rating_is_overridden: false, personal_rating: null }];
+  const saved = snapshot.map(validateOverride);
+  assert.equal(mergeCollections(books, screen, saved).screen[0].isFavorite, true);
+  for (const input of [null, undefined, [], 'invalid', { ...snapshot[0], media_type: 'other' }, { ...snapshot[0], rating_is_overridden: true, personal_rating: '10' }]) {
+    assert.throws(() => validateOverride(input));
+  }
+});
 test('favorites and comments merge by stable media type and ID without changing imports', () => {
   const original = JSON.stringify({ books, screen });
   const saved = [override(), override({ media_type: 'screen', media_id: screen[0].id, personal_rating: 7 })];

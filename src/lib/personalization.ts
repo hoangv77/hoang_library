@@ -21,14 +21,16 @@ export type PersonalScreenTitle = ScreenTitle & Personalization;
 export const commentText = (comment?: string | null) => comment?.trim() || 'N/A';
 export const overrideKey = (type: MediaType, id: string) => `${type}:${id}`;
 
-export function validateOverride(value: MediaOverride): MediaOverride {
-  if (!['book', 'screen'].includes(value.media_type) || typeof value.media_id !== 'string' || !/^[a-zA-Z0-9_-]{1,180}$/.test(value.media_id)) throw new Error('This title has an invalid collection identifier.');
+export function validateOverride(input: unknown): MediaOverride {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) throw new Error('Invalid collection override.');
+  const value = input as Record<string, unknown>;
+  if ((value.media_type !== 'book' && value.media_type !== 'screen') || typeof value.media_id !== 'string' || !/^[a-zA-Z0-9_-]{1,180}$/.test(value.media_id)) throw new Error('This title has an invalid collection identifier.');
   if (typeof value.is_favorite !== 'boolean' || typeof value.rating_is_overridden !== 'boolean') throw new Error('Invalid favorite or rating setting.');
   if (value.personal_comment !== null && typeof value.personal_comment !== 'string') throw new Error('Comments must be plain text.');
   // PostgreSQL char_length counts Unicode code points rather than UTF-16 units.
   if (Array.from(value.personal_comment ?? '').length > 2000) throw new Error('Personal comments must be 2,000 characters or fewer.');
   const maximum = value.media_type === 'book' ? 5 : 10;
-  if (value.personal_rating !== null && (!Number.isInteger(value.personal_rating) || value.personal_rating < 1 || value.personal_rating > maximum)) throw new Error(`Choose a whole-number rating from 1 to ${maximum}.`);
+  if (value.personal_rating !== null && (typeof value.personal_rating !== 'number' || !Number.isInteger(value.personal_rating) || value.personal_rating < 1 || value.personal_rating > maximum)) throw new Error(`Choose a whole-number rating from 1 to ${maximum}.`);
   if (!value.rating_is_overridden && value.personal_rating !== null) throw new Error('An imported rating cannot also have an override value.');
   return { media_type: value.media_type, media_id: value.media_id, is_favorite: value.is_favorite,
     personal_comment: value.personal_comment?.trim() || null, rating_is_overridden: value.rating_is_overridden,
