@@ -1,5 +1,11 @@
 import { useEffect, useRef } from 'react';
 
+export function advanceRail(rail: HTMLDivElement, direction: number) {
+  const sleeve = rail.querySelector<HTMLElement>('[data-rail-step]');
+  const step = sleeve?.offsetWidth ? sleeve.offsetWidth + (parseFloat(getComputedStyle(sleeve.parentElement!).columnGap) || 0) : 320;
+  rail.scrollBy({ left: direction * step, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+}
+
 // One DOM update per frame; scrolling does not rerender every object in the scene.
 export function useHorizontalRail(loop: boolean, curved = false, openingKey?: string) {
   const ref = useRef<HTMLDivElement>(null);
@@ -67,11 +73,7 @@ export function useHorizontalRail(loop: boolean, curved = false, openingKey?: st
         event.preventDefault();
         if (event.key === 'Home') rail.scrollLeft = loop ? segmentWidth() : 0;
         else if (event.key === 'End') rail.scrollLeft = loop ? segmentWidth() * 2 - rail.clientWidth : rail.scrollWidth;
-        else {
-          const sleeve = rail.querySelector<HTMLElement>('[data-rail-step]');
-          const step = sleeve?.offsetWidth ? sleeve.offsetWidth + (parseFloat(getComputedStyle(sleeve.parentElement!).columnGap) || 0) : 320;
-          rail.scrollBy({ left: event.key === 'ArrowLeft' ? -step : step, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
-        }
+        else advanceRail(rail, event.key === 'ArrowLeft' ? -1 : 1);
       }
     };
     rail.addEventListener('wheel', wheel, { passive: false }); rail.addEventListener('scroll', schedule, { passive: true });

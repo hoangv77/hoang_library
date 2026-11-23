@@ -25,6 +25,7 @@ test('the restored TV owns the opening center and opens the saved episode withou
   assert.equal(view.container.querySelectorAll('.watching-slot').length, 3);
   assert.equal(view.container.querySelectorAll('[data-opening-center]').length, 1);
   assert.ok(view.container.querySelector('[data-opening-center] .television'));
+  assert.equal(view.container.querySelectorAll('[data-opening-center] .watching-lower-row .poster-target').length, 2);
   assert.equal(view.container.querySelectorAll('.poster-target:not([aria-hidden])').length, screen.length);
   assert.equal(ui.getAllByRole('button', { name: /Currently watching/ }).length, 1);
   fireEvent.click(ui.getByRole('button', { name: /Currently watching/ })); assert.equal(opened, 'Selected episode');
@@ -63,5 +64,10 @@ test('album keyboard browsing advances one measured sleeve rather than a fixed m
   const moves: number[] = [];
   rail.scrollBy = ((options: ScrollToOptions) => { moves.push(options.left!); }) as typeof rail.scrollBy;
   fireEvent.keyDown(rail, { key: 'ArrowRight' }); fireEvent.keyDown(rail, { key: 'ArrowLeft' });
-  assert.deepEqual(moves, [148, -148]);
+  fireEvent.click(ui.getByRole('button', { name: 'Next album', exact: true }));
+  fireEvent.click(ui.getByRole('button', { name: 'Previous album', exact: true }));
+  assert.deepEqual(moves, [148, -148, 148, -148]);
+  view.rerender(<VinylShelf albums={[albums[0]]} onOpen={() => {}} />);
+  assert.equal(ui.queryByRole('button', { name: 'Next album', exact: true }), null);
+  assert.equal(ui.queryByRole('button', { name: 'Previous album', exact: true }), null);
 });

@@ -107,7 +107,7 @@ test('current selections survive fresh hooks and production never calls a write 
     await assert.rejects(production.result.current.save('playing', null), /read-only/); assert.equal(requests, before);
   } finally { globalThis.fetch = original; }
 });
-test('opening anchor centers the two-row wall around the first favorite across viewport widths', () => {
+test('opening anchor centers the TV and the poster row beneath it across viewport widths', () => {
   const originalRect = HTMLElement.prototype.getBoundingClientRect;
   const originalWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'clientWidth');
   const originalScroll = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollWidth');
@@ -121,10 +121,11 @@ test('opening anchor centers the two-row wall around the first favorite across v
   try {
     for (width of [375, 768, 1280]) {
       const items = screen.map((item, index) => ({ ...item, isFavorite: index === 22 || index === 30 }));
-      const view = render(<PosterWall items={items} onOpen={() => {}} />);
+      const view = render(<PosterWall items={items} onOpen={() => {}} watching={() => <span>Currently Watching</span>} />);
       const anchor = view.container.querySelector<HTMLElement>('[data-opening-center]')!;
       assert.equal(anchor.getBoundingClientRect().left + 70, width / 2);
-      assert.equal(anchor.querySelector('button:last-child')!.getAttribute('data-media-id'), items[22].id);
+      assert.ok(anchor.classList.contains('watching-slot'));
+      assert.equal(anchor.querySelectorAll('.watching-lower-row .poster-target').length, 2);
       view.unmount();
     }
   } finally {

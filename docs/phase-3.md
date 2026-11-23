@@ -119,24 +119,31 @@ in the [Cover Art Archive API](https://musicbrainz.org/doc/Cover_Art_Archive/API
 ## Scene behavior
 
 The poster wall has two staggered rows surrounding the softly faded heading.
-Once saved overrides load, favorites fill the lower frames around the opening
-and then the outside upper frames. The episode screen is inserted into the
-central opening and centered beneath the title on load; surrounding poster
-columns move outward without dropping any titles. Saving a favorite does not
-reorder the wall until reload.
-Original source indices drive detail selection; decorative looping copies are
-not extra keyboard entries. The rails measure actual segment widths for wrapping.
+The episode TV occupies only the upper row, with two regular posters beneath
+it. Its opening anchor centers the screen beneath the title on load.
+
+Once saved overrides load, favorites fill the nearest upper positions beside
+the TV. They run from left to right across those positions, including neighboring
+loop segments. Smaller favorite counts stay nearest the screen; lower positions
+receive favorites only after upper positions fill. Saving a favorite does not
+reorder the wall until reload. Original source indices still drive detail
+selection, and no titles are dropped. Decorative looping copies add no extra
+keyboard entries. The rails measure actual segment widths for wrapping.
 
 Currently Playing has a larger cover with song, artist and album text alongside
-it on desktop. To its right, the record holder fits one complete album sleeve
-with narrow neighboring sleeve edges. Scroll, swipe or use arrow keys to browse;
-keyboard arrows move one sleeve at a time. Books fill the right side of the
-shelf. The song panel remains manually selected, with a music indicator
-and no playback controls. Footer legends describe gold favorites and purple
-current selections. The legends, detailed drag/swipe icon, editing link and
-credits share one desktop footer row, wrapping compactly on smaller screens.
-The scene fits the viewport at common desktop sizes; very short screens may
-need a small vertical scroll.
+it on desktop. It sits higher, leaving open space below. The record holder is
+inset to the left, leaving a gap before the books. It fits one complete sleeve
+with neighboring cover edges and small jacket details. Side arrow tabs, wheel,
+swipe and drag browse the albums; keyboard and side arrows move one sleeve at
+a time. These controls are omitted when fewer than two albums are available.
+The song panel remains a manually selected display without audio playback.
+
+Gold favorites, purple current selections and drag/swipe guidance form a closer,
+centered group below the shelf. Editing and credits stay lower on the right.
+Small screens wrap the legend group compactly. The scene fits common viewport
+sizes; very short screens can still scroll. Empty parts of the shelf layer let
+pointer clicks reach visible posters behind it, while the books and record
+holder remain interactive.
 
 Detail views move the same solid cover/frame with visible edge faces through a
 3D turn and return it to the matching visible object, including after Previous /

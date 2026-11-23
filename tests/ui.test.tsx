@@ -34,10 +34,10 @@ test('poster positions wait for saved favorites, stay fixed during edits, and op
   view.rerender(<PosterWall items={saved} arrangementReady onOpen={open} />);
   const initial = order();
   assert.deepEqual(initial, arrangePosterWall(saved));
-  const centerLower = view.container.querySelector<HTMLButtonElement>('[data-opening-center] .poster-target:last-child')!;
-  assert.equal(centerLower.dataset.mediaId, screen[20].id);
-  fireEvent.click(centerLower);
-  assert.equal(opened, 20);
+  const favorite = view.container.querySelector<HTMLButtonElement>('.poster-target.is-favorite:not([aria-hidden])')!;
+  const sourceIndex = screen.findIndex(item => item.id === favorite.dataset.mediaId);
+  fireEvent.click(favorite);
+  assert.equal(opened, sourceIndex);
   assert.equal(view.container.querySelectorAll('[data-opening-center]').length, 1);
   assert.equal(view.container.querySelectorAll('.poster-column').length, Math.ceil(screen.length / 2) * 3);
   const rail = view.container.querySelector<HTMLDivElement>('.poster-rail')!;
