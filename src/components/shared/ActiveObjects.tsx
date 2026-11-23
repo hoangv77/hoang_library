@@ -22,10 +22,12 @@ export function WatchingTV({ screen, current, canEdit, duplicate = false, onOpen
     <button className="television" disabled={!item} tabIndex={duplicate ? -1 : 0} aria-haspopup={item ? 'dialog' : undefined} aria-label={item ? `Currently watching ${item.title}${episode ? ', ' + episode.title : ''}. Open details` : 'No screen title selected'} onClick={event => episode ? onEpisode(episode, event.currentTarget) : onOpen({ kind: 'screen', index, element: event.currentTarget, rect: event.currentTarget.getBoundingClientRect() })}>
       <span className="tv-screen">{artwork ? <img src={artwork} alt={episodeStill ? `Still from ${episode!.title}` : `${item.title} ${item.type === 'series' ? 'series artwork' : 'movie artwork'}`} onError={() => setFailed(previous => [...previous, artwork])} /> : <span className="tv-off" />}</span><span className="tv-status-light" aria-hidden="true" />
     </button>
-    <p className="active-label mono">Currently Watching</p>
-    <p className="active-title">{episode?.title || item?.title || (selection ? '' : 'No title selected')}</p>
-    {item && <p className="active-subtitle">{episode ? `${item.title} · S${episode.seasonNumber} E${episode.episodeNumber}` : selection?.episodeNumber !== undefined ? `${item.title} · Episode metadata unavailable` : item.type === 'series' ? 'Series artwork' : 'Movie artwork'}</p>}
-    {selection && !item && <Recovery category="watching" controller={current} canEdit={canEdit && !duplicate} />}
+    <div className="watching-caption">
+      <p className="active-label mono">Currently Watching</p>
+      <p className="active-title">{episode?.title || item?.title || (selection ? '' : 'No title selected')}</p>
+      {item && <p className="active-subtitle">{episode ? `${item.title} · S${episode.seasonNumber} E${episode.episodeNumber}` : selection?.episodeNumber !== undefined ? `${item.title} · Episode metadata unavailable` : item.type === 'series' ? 'Series artwork' : 'Movie artwork'}</p>}
+      {selection && !item && <Recovery category="watching" controller={current} canEdit={canEdit && !duplicate} />}
+    </div>
   </aside>;
 }
 export function PlayingPanel({ albums, tracks, current, canEdit, onOpen }: { albums: PersonalAlbum[]; tracks: MusicTrack[]; current: ActiveController; canEdit: boolean; onOpen: (selection: AlbumSelection) => void }) {

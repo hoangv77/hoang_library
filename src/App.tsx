@@ -45,7 +45,7 @@ export default function App() {
       </header>
       <div className="collection-shelf">
         <section className="shelf-music" aria-label="Music collection">
-          <PlayingPanel albums={albums} tracks={tracks} current={current} canEdit={canEdit} onOpen={setAlbumSelection} />
+          <div className="playing-space"><PlayingPanel albums={albums} tracks={tracks} current={current} canEdit={canEdit} onOpen={setAlbumSelection} /></div>
           <div className="album-browser"><VinylShelf albums={albums} currentId={current.active.playing?.albumId} onOpen={setAlbumSelection} />{canEdit && <button className="add-album-action text-button" disabled={!music.ready} onClick={() => setMusicManager(true)}>Add Album</button>}</div>
           {music.error && <p className="music-load-error" role="status">{music.error}</p>}
         </section>

@@ -120,7 +120,9 @@ in the [Cover Art Archive API](https://musicbrainz.org/doc/Cover_Art_Archive/API
 
 The poster wall has two staggered rows surrounding the softly faded heading.
 The episode TV occupies only the upper row, with two regular posters beneath
-it. Its opening anchor centers the screen beneath the title on load.
+it. Its opening anchor centers the screen beneath the title on load. The soft
+header fade blends into the surrounding frames. The TV description is centered
+between the physical screen stand and the posters underneath.
 
 Once saved overrides load, favorites fill the nearest upper positions beside
 the TV. They run from left to right across those positions, including neighboring
@@ -131,11 +133,13 @@ selection, and no titles are dropped. Decorative looping copies add no extra
 keyboard entries. The rails measure actual segment widths for wrapping.
 
 Currently Playing has a larger cover with song, artist and album text alongside
-it on desktop. It sits higher, leaving open space below. The record holder is
-inset to the left, leaving a gap before the books. It fits one complete sleeve
-with neighboring cover edges and small jacket details. Side arrow tabs, wheel,
-swipe and drag browse the albums; keyboard and side arrows move one sleeve at
-a time. These controls are omitted when fewer than two albums are available.
+it on desktop. The whole display is centered in the available vertical space
+between the posters above and the shelf, with compact sizing on short screens.
+The record holder is inset to the left, leaving a gap before the books. It fits one complete sleeve
+with neighboring cover edges and three layered jackets behind the front sleeve.
+There are no side buttons; wheel, swipe, drag and keyboard arrows browse albums.
+Keyboard arrows move one sleeve at a time. The decorative jacket layers are
+omitted when fewer than two albums are available.
 The song panel remains a manually selected display without audio playback.
 
 Gold favorites, purple current selections and drag/swipe guidance form a closer,

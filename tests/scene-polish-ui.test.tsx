@@ -64,10 +64,12 @@ test('album keyboard browsing advances one measured sleeve rather than a fixed m
   const moves: number[] = [];
   rail.scrollBy = ((options: ScrollToOptions) => { moves.push(options.left!); }) as typeof rail.scrollBy;
   fireEvent.keyDown(rail, { key: 'ArrowRight' }); fireEvent.keyDown(rail, { key: 'ArrowLeft' });
-  fireEvent.click(ui.getByRole('button', { name: 'Next album', exact: true }));
-  fireEvent.click(ui.getByRole('button', { name: 'Previous album', exact: true }));
-  assert.deepEqual(moves, [148, -148, 148, -148]);
+  assert.deepEqual(moves, [148, -148]);
+  assert.equal(ui.queryByRole('button', { name: 'Next album', exact: true }), null);
+  assert.equal(ui.queryByRole('button', { name: 'Previous album', exact: true }), null);
+  assert.equal(view.container.querySelectorAll('.vinyl-stack i').length, 3);
   view.rerender(<VinylShelf albums={[albums[0]]} onOpen={() => {}} />);
   assert.equal(ui.queryByRole('button', { name: 'Next album', exact: true }), null);
   assert.equal(ui.queryByRole('button', { name: 'Previous album', exact: true }), null);
+  assert.equal(view.container.querySelector('.vinyl-stack'), null);
 });
