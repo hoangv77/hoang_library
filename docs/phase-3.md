@@ -36,7 +36,8 @@ from its album's detail editor.
 The current book, screen title and album glow purple in their own collections.
 Purple takes visual priority over favorite gold without clearing the favorite.
 The legend below the shelf explains both colors with physical media symbols.
-There is no separate reading stand or television widget. Book page images can
+There is no separate reading stand. A thin-bezel episode screen occupies the
+central space beneath the heading in the poster rail. Book page images can
 no longer be added or displayed; optional page-number progress remains. Legacy
 page-image references remain readable in saved JSON and are removed only when
 that reading selection is explicitly saved again. Existing image files are not deleted.
@@ -118,16 +119,24 @@ in the [Cover Art Archive API](https://musicbrainz.org/doc/Cover_Art_Archive/API
 ## Scene behavior
 
 The poster wall has two staggered rows surrounding the softly faded heading.
-Once saved overrides load, favorites fill the central lower frames and then the
-outside upper frames. Saving a favorite does not reorder the wall until reload.
+Once saved overrides load, favorites fill the lower frames around the opening
+and then the outside upper frames. The episode screen is inserted into the
+central opening and centered beneath the title on load; surrounding poster
+columns move outward without dropping any titles. Saving a favorite does not
+reorder the wall until reload.
 Original source indices drive detail selection; decorative looping copies are
 not extra keyboard entries. The rails measure actual segment widths for wrapping.
 
-Currently Playing sits to the left of a single scrolling row of record sleeves,
-in a small space at the left end of the shared bookshelf. Books fill the rest
-of the shelf. The song panel remains manually selected, with a music indicator
+Currently Playing has a larger cover with song, artist and album text alongside
+it on desktop. To its right, the record holder fits one complete album sleeve
+with narrow neighboring sleeve edges. Scroll, swipe or use arrow keys to browse;
+keyboard arrows move one sleeve at a time. Books fill the right side of the
+shelf. The song panel remains manually selected, with a music indicator
 and no playback controls. Footer legends describe gold favorites and purple
-current selections. The scene scrolls vertically on smaller screens.
+current selections. The legends, detailed drag/swipe icon, editing link and
+credits share one desktop footer row, wrapping compactly on smaller screens.
+The scene fits the viewport at common desktop sizes; very short screens may
+need a small vertical scroll.
 
 Detail views move the same solid cover/frame with visible edge faces through a
 3D turn and return it to the matching visible object, including after Previous /
@@ -135,6 +144,10 @@ Next navigation. Offscreen objects recede locally rather than scrolling the page
 Closing waits for the animation to finish. Stable scrollbar space, focus without
 page scrolling, and horizontal-only rail focus movement prevent layout jumps.
 Dialogs trap focus and guard unsaved edits; reduced motion skips the flights.
+The TV opens the saved episode details and retains a parent-series link. If a
+still is missing, it falls back to its own series artwork. Album details retain
+ratings, metadata and track durations but show no album or per-track play counts.
+Listening-history counts remain in data for imports and thresholds.
 
 Run `npm run build` and `npm test`. The captured import report is in
 `imports/music-summary.json`. Final local review notes, screenshots and a

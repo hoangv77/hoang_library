@@ -45,7 +45,7 @@ export function AlbumDetail({ selection, albums, tracks, canEdit, current, save,
   const list = (ids: string[]) => <ol className="album-tracks">{ids.flatMap(id => {
     const track = indexed.get(id); if (!track) return [];
     const duration = track.durationMs ? `${Math.floor(track.durationMs / 60000)}:${String(Math.floor(track.durationMs / 1000) % 60).padStart(2, '0')}` : '';
-    return [<li key={id}><span>{track.discNumber && track.discNumber > 1 ? `${track.discNumber}.` : ''}{track.trackNumber ?? '—'}</span><strong>{track.title}</strong><small>{duration}</small><small>{track.observedScrobbles} plays</small></li>];
+    return [<li key={id}><span>{track.discNumber && track.discNumber > 1 ? `${track.discNumber}.` : ''}{track.trackNumber ?? '—'}</span><strong>{track.title}</strong><small>{duration}</small></li>];
   })}</ol>;
   return createPortal(<div className={`detail-overlay ${out ? 'is-out' : ''} ${closing ? 'is-closing' : ''}`}>
     <div className="detail-backdrop" onClick={close} aria-hidden="true" />
@@ -55,8 +55,7 @@ export function AlbumDetail({ selection, albums, tracks, canEdit, current, save,
         <div ref={art} className={`detail-art detail-album ${album.isFavorite ? 'is-favorite' : ''} ${current.active.playing?.albumId === album.id ? 'is-current' : ''}`}><Artwork src={album.artwork} title={album.title} subtitle={album.artist} eager /><span className="object-depth object-side" aria-hidden="true" /><span className="object-depth object-right" aria-hidden="true" /><span className="object-depth object-top" aria-hidden="true" /><span className="object-back" aria-hidden="true" /></div>
         <div className="detail-copy"><p className="eyebrow mono">From the record bin</p>{album.isFavorite && <p className="favorite-label mono">Personal favorite</p>}<h2 id="album-title">{album.title}</h2><p className="detail-author">{album.artist}</p>
           <p className="detail-facts mono">{[album.year, ...album.genres].filter(Boolean).join(' · ')}</p>
-          <div className="detail-ratings"><div><span className="mono">My rating</span><strong><BookRating rating={album.personalRating} /></strong></div><div><span className="mono">Observed scrobbles</span><strong>{album.observedScrobbles}</strong></div></div>
-          <p className="field-note">{album.lastPlayedAt ? `Counts come from the supplied listening-history export, not lifetime totals. Last observed: ${album.lastPlayedAt.slice(0, 10)}.` : 'Manually added album. No listening events have been imported for this album.'}</p>
+          <div className="detail-ratings"><div><span className="mono">My rating</span><strong><BookRating rating={album.personalRating} /></strong></div></div>
           <PersonalComments comment={album.personalComment} />
           <CurrentEditor category="playing" item={album} controller={current} tracks={tracks} canEdit={canEdit} setNavigationGuard={setActiveGuard} />
           <OwnerEditor type="album" id={album.id} item={album} rating={album.personalRating} canEdit={canEdit} save={save} setNavigationGuard={setOwnerGuard} />

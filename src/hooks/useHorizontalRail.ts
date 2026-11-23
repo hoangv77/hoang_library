@@ -6,6 +6,7 @@ export function useHorizontalRail(loop: boolean, curved = false, openingKey?: st
   useEffect(() => {
     const rail = ref.current; if (!rail) return;
     let frame = 0, dragged = false;
+    let wheelEnd: ReturnType<typeof setTimeout> | undefined;
     let start: { x: number; scroll: number; pointer: number } | null = null;
     const segmentWidth = () => rail.querySelector<HTMLElement>('[data-rail-segment]')?.offsetWidth || rail.scrollWidth / 3;
     const update = () => {
@@ -31,6 +32,11 @@ export function useHorizontalRail(loop: boolean, curved = false, openingKey?: st
     const wheel = (event: WheelEvent) => {
       if (event.ctrlKey || rail.scrollWidth <= rail.clientWidth) return;
       event.preventDefault();
+      if (rail.hasAttribute('data-snap-sleeves')) {
+        // Let small trackpad deltas accumulate before settling onto one sleeve.
+        rail.dataset.wheeling = 'true'; clearTimeout(wheelEnd);
+        wheelEnd = setTimeout(() => { delete rail.dataset.wheeling; }, 160);
+      }
       const amount = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
       rail.scrollLeft += amount * (event.deltaMode === 1 ? 20 : event.deltaMode === 2 ? rail.clientWidth : 1);
     };
@@ -61,7 +67,11 @@ export function useHorizontalRail(loop: boolean, curved = false, openingKey?: st
         event.preventDefault();
         if (event.key === 'Home') rail.scrollLeft = loop ? segmentWidth() : 0;
         else if (event.key === 'End') rail.scrollLeft = loop ? segmentWidth() * 2 - rail.clientWidth : rail.scrollWidth;
-        else rail.scrollBy({ left: event.key === 'ArrowLeft' ? -320 : 320, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+        else {
+          const sleeve = rail.querySelector<HTMLElement>('[data-rail-step]');
+          const step = sleeve?.offsetWidth ? sleeve.offsetWidth + (parseFloat(getComputedStyle(sleeve.parentElement!).columnGap) || 0) : 320;
+          rail.scrollBy({ left: event.key === 'ArrowLeft' ? -step : step, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+        }
       }
     };
     rail.addEventListener('wheel', wheel, { passive: false }); rail.addEventListener('scroll', schedule, { passive: true });
@@ -80,7 +90,7 @@ export function useHorizontalRail(loop: boolean, curved = false, openingKey?: st
     }
     update();
     return () => {
-      cancelAnimationFrame(frame); resize.disconnect();
+      cancelAnimationFrame(frame); clearTimeout(wheelEnd); delete rail.dataset.wheeling; resize.disconnect();
       rail.removeEventListener('wheel', wheel); rail.removeEventListener('scroll', schedule); rail.removeEventListener('pointerdown', down); rail.removeEventListener('pointermove', move); rail.removeEventListener('pointerup', up); rail.removeEventListener('pointercancel', up); rail.removeEventListener('lostpointercapture', up); rail.removeEventListener('click', click, true); rail.removeEventListener('keydown', key); rail.removeEventListener('focusin', focus);
     };
   }, [loop, curved, openingKey]);
