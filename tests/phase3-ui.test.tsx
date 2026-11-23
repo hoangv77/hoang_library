@@ -16,11 +16,11 @@ import { PosterWall } from '../src/components/screen/PosterWall';
 import { mergeAlbums } from '../src/lib/personalization';
 
 afterEach(() => { cleanup(); document.body.innerHTML = ''; });
-const controller = (active: CurrentlyActive = emptyActive): ActiveController => ({ active, episodes: {}, error: '', save: async (category, selection) => ({ ...active, [category]: selection }), loadEpisodes: async () => [] });
+const controller = (active: CurrentlyActive = emptyActive): ActiveController => ({ active, episodes: {}, error: '', forgetPlayingAlbum: () => {}, save: async (category, selection) => ({ ...active, [category]: selection }), loadEpisodes: async () => [] });
 test('empty active objects remain neutral regardless of source listening or reading history', () => {
   const current = controller(), onOpen = () => {};
   render(<><ReadingStand books={books} current={current} canEdit={false} onOpen={onOpen} /><WatchingTV screen={screen} current={current} canEdit={false} onOpen={onOpen} onEpisode={onOpen} /><PlayingPanel albums={albums} tracks={tracks} current={current} canEdit={false} onOpen={onOpen} /></>);
-  assert.ok(ui.getByText('No book selected')); assert.ok(ui.getByText('No title selected')); assert.ok(ui.getByText('Nothing selected')); assert.ok(ui.getByText('Blank-page illustration'));
+  assert.ok(ui.getByText('Not currently reading')); assert.ok(ui.getByText('No title selected')); assert.ok(ui.getByText('Nothing selected')); assert.ok(ui.getByText('Blank-page illustration'));
   assert.equal(document.querySelectorAll('button:not(:disabled)').length, 0);
 });
 test('album selection without a song is explicit and missing records offer local recovery', async () => {
@@ -79,11 +79,12 @@ test('episode artwork falls back only to its own parent series and links to pare
   assert.ok(ui.getByText('Series artwork · episode still unavailable'));
   fireEvent.click(ui.getByText('View parent series')); assert.ok(parent);
 });
-test('missing local page images and episode stills fall back with accurate labels', () => {
+test('reading covers and episode stills fall back without inventing page or episode content', () => {
   const reading = controller({ ...emptyActive, reading: { bookId: books[0].id, pageImage: '/page-images/missing.webp' } });
   const view = render(<ReadingStand books={books} current={reading} canEdit={false} onOpen={() => {}} />);
-  fireEvent.error(ui.getByAltText('Personally supplied book page'));
-  assert.ok(ui.getByText('Image unavailable · Blank-page illustration'));
+  assert.equal(ui.queryByAltText('Personally supplied book page'), null);
+  fireEvent.error(ui.getByAltText(books[0].title));
+  assert.ok(view.container.querySelector('.read-front-cover .artwork-fallback'));
   view.unmount();
   const series = screen.find(item => item.type === 'series' && item.poster)!;
   render(<EpisodeDetail episode={{ screenId: series.id, seasonNumber: 1, episodeNumber: 1, title: 'An episode', description: '', still: '/artwork/episodes/missing.webp' }} screen={series} onClose={() => {}} onParent={() => {}} />);

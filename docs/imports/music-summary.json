@@ -1,4 +1,5 @@
 {
+  "minimumScrobbles": 70,
   "input": 10125,
   "observedEvents": 10125,
   "duplicates": 0,
@@ -7,97 +8,10 @@
     "2026-04-14T19:14:56.000Z",
     "2026-10-16T03:06:40.000Z"
   ],
-  "included": 135,
-  "excluded": 1026,
-  "unresolved": [
-    {
-      "id": "album-200099a272231cd46ea1dba7",
-      "artist": "Frou Frou",
-      "title": "A New Kind of Love (demo)"
-    },
-    {
-      "id": "album-e1745c10534d3fd05c382c6e",
-      "artist": "A$AP Rocky",
-      "title": "A$AP Forever (feat. Moby)"
-    },
-    {
-      "id": "album-804f56b9c37ae206a9517b24",
-      "artist": "Draft Day",
-      "title": "2CRETE"
-    },
-    {
-      "id": "album-3568d1e8c06c84121a0ba221",
-      "artist": "Lana Del Rey",
-      "title": "Born to Die – Paradise Edition (Special Version)"
-    },
-    {
-      "id": "album-3bae26960abc0d5023aec00d",
-      "artist": "Steve Lacy",
-      "title": "is it cool? (feat. SZA)"
-    },
-    {
-      "id": "album-8804bee8f93d24c229d73403",
-      "artist": "PARTYNEXTDOOR",
-      "title": "PARTYNEXTDOOR 3 (P3) [10-YEAR EDITION]"
-    },
-    {
-      "id": "album-e2f662e93e5c18a27de72249",
-      "artist": "The Beatles",
-      "title": "The Beatles 1967 - 1970 (Remastered)"
-    }
-  ],
-  "ambiguous": [
-    {
-      "id": "album-e3ecf86b820f90e68fb712bc",
-      "artist": "Lana Del Rey",
-      "title": "Ultraviolence (Deluxe)"
-    }
-  ],
-  "missingArtwork": [
-    {
-      "id": "album-e3ecf86b820f90e68fb712bc",
-      "title": "Ultraviolence (Deluxe)"
-    },
-    {
-      "id": "album-200099a272231cd46ea1dba7",
-      "title": "A New Kind of Love (demo)"
-    },
-    {
-      "id": "album-e1745c10534d3fd05c382c6e",
-      "title": "A$AP Forever (feat. Moby)"
-    },
-    {
-      "id": "album-804f56b9c37ae206a9517b24",
-      "title": "2CRETE"
-    },
-    {
-      "id": "album-9c16a8acd2750c2a399cfb34",
-      "title": "Piggypink"
-    },
-    {
-      "id": "album-3568d1e8c06c84121a0ba221",
-      "title": "Born to Die – Paradise Edition (Special Version)"
-    },
-    {
-      "id": "album-4d940447f4729ae577e8ef38",
-      "title": "Hell N Back (Sped Up)"
-    },
-    {
-      "id": "album-3bae26960abc0d5023aec00d",
-      "title": "is it cool? (feat. SZA)"
-    },
-    {
-      "id": "album-8804bee8f93d24c229d73403",
-      "title": "PARTYNEXTDOOR 3 (P3) [10-YEAR EDITION]"
-    },
-    {
-      "id": "album-a36310ad10225fea4f93bcfa",
-      "title": "PARTYNEXTDOOR"
-    },
-    {
-      "id": "album-e2f662e93e5c18a27de72249",
-      "title": "The Beatles 1967 - 1970 (Remastered)"
-    }
-  ],
-  "verifiedTracklists": 121
+  "included": 15,
+  "excluded": 1146,
+  "unresolved": [],
+  "ambiguous": [],
+  "missingArtwork": [],
+  "verifiedTracklists": 15
 }

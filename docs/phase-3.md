@@ -37,8 +37,12 @@ For a page image, place an image you supply in `public/page-images`, for example
 `reading-page.webp`, then enter `/page-images/reading-page.webp` in the book
 editor. Allowed formats are PNG, JPG/JPEG, WebP and AVIF; filenames may use letters,
 numbers, hyphens and underscores. Remote URLs and nested paths are rejected.
-The file must exist when saved. Page images become public build assets. Without
-an available image, the stand shows blank pages labeled as an illustration.
+The file must exist when saved. Page images become public build assets and appear
+in the reading details. A selected book rests on the stand with its own front
+cover, material colors, layered page edges and binding. Selecting it opens the
+cover before showing the detail view; reduced motion opens details immediately.
+The empty stand holds a blank open hardcover labeled as an illustration, with
+the understated caption **Not currently reading**.
 
 Local writes require loopback, same-origin requests and the existing CSRF token.
 Production and `npm run preview` expose no write middleware, make no metadata
@@ -52,6 +56,8 @@ Changes saved after a build need a new build to appear in its static output.
 npm run import:music -- 'C:\path\to\lastfm-history.csv'
 # Regenerate from the current cache without network access:
 npm run import:music -- 'C:\path\to\lastfm-history.csv' --offline
+# Optional explicit threshold (70 is the default):
+npm run import:music -- 'C:\path\to\lastfm-history.csv' --min-scrobbles=70
 ```
 
 Required headers are `uts`, `artist`, `album`, `track`. Optional artist, album and
@@ -64,7 +70,7 @@ saved owner references. Different artists with the same album title stay separat
 
 Deduplication uses the event timestamp, normalized artist/album identity and
 track. Repeated listening at different timestamps counts separately. The strict
-20-scrobble threshold applies after normalization and deduplication. Empty or
+70-scrobble threshold applies after normalization and deduplication. Empty or
 invalid records are reported, never assigned to another album.
 
 The importer writes `src/data/music.ts`, `src/data/music-tracks.ts`, and local WebP covers. Personal overrides
@@ -74,6 +80,36 @@ failures, and reports inclusion, exclusion, unresolved/ambiguous matches, missin
 covers and complete tracklists in `.cache/music-summary.json`. With the same CSV
 and cache, repeat imports produce identical data. Online reruns can resolve prior
 failures as external data or availability improves.
+
+## Persistent album management
+
+Choose **Edit collection → Add Album** above the record bin. Search by title and
+artist, choose a MusicBrainz result, review the fetched artwork and tracklist,
+then **Save album**. Search does not save membership. If a lookup is unavailable,
+enter title/artist and optional year, known track titles and a local cover path.
+Place supplied cover files in `public/album-images` and use a path such as
+`/album-images/my-record.webp`; PNG, JPG/JPEG, WebP and AVIF are supported.
+Manually supplied lists are labeled **Owner-provided tracks**, not verified
+release tracklists. Manual albums require no listening history.
+
+Album details offer **Remove from collection** with confirmation. The album
+disappears only after the files are successfully saved. **Add Album → Removed
+albums → Restore** restores it, including its separate personal overrides.
+Re-adding a removed record also clears its exclusion. Normalized artist/title,
+stable IDs and verified MusicBrainz IDs prevent duplicate additions.
+
+`src/data/music-membership.json` stores manual album/track records and exclusion
+snapshots separately from Last.fm output. The visible collection is automatic
+imports plus manual records minus exclusions. Imported counts stay authoritative;
+saved custom metadata takes precedence when a manual album later qualifies for
+automatic import. Restoring an album absent from the newest export retains its
+saved metadata as a manual album. Original listening history is never edited.
+
+Removing a currently playing album clears only that category. The backend
+serializes this with current-selection writes and rolls the active clear back
+if membership persistence fails. Favorites, comments and ratings remain stored
+for later restoration. All membership endpoints use the existing local-only,
+same-origin CSRF boundary. Public builds expose neither actions nor endpoints.
 
 Verified complete tracklists describe one validated release; bonus tracks from
 other observed editions are shown separately. Partial, duplicate-title or unresolved
@@ -90,8 +126,10 @@ left inset. Saving a favorite does not reorder the wall until reload. Original
 source indices drive detail selection; decorative looping copies are not extra
 keyboard entries. The rails measure actual segment widths for seamless wrapping.
 
-The wooden record bin, compact TV, and right-side reading stand belong to their
-respective collections. The song panel is a manually selected display with a music
+The modern thin-bezel TV scrolls within the slightly staggered poster row. The
+wooden record bin and song panel sit directly below that row, above the unchanged
+bookshelf. The right-side reading object uses the shelf's layered 3D materials
+and a compact neutral display cradle. The song panel is a manually selected display with a music
 indicator and no playback controls. Footer guidance sits beside the gold legend.
 The scene scrolls vertically on smaller screens. All detail dialogs trap focus,
 return focus on close and guard unsaved edits; reduced-motion settings disable

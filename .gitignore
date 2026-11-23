@@ -32,4 +32,5 @@ artifacts/
 src/data/personal-overrides.json.*.tmp
 src/data/currently-active.json.*.tmp
 src/data/tv-episodes.json.*.tmp
+src/data/music-membership.json.*.tmp
 *.tsbuildinfo

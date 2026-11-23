@@ -7,14 +7,17 @@ import { localOverridesEndpoint } from '../src/lib/localBackend';
 import { overrideKey, validateOverride, type MediaOverride } from '../src/lib/personalization';
 import { createActiveStore } from './active-store';
 import type { ActiveCategory } from '../src/lib/currentlyActive';
+import { createMusicStore, searchAlbums, resolveAlbum } from './music-store';
 
 const loopback = new Set(['127.0.0.1', 'localhost', '[::1]']);
 const localAddresses = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
 const maximumBytes = 2 * 1024 * 1024;
 
-// The endpoint always targets one repository file; request bodies cannot supply paths.
+// Write endpoints use fixed repository files; request bodies never choose a storage filename.
 export function createLocalEditingMiddleware(root: string) {
-  const activeStore = createActiveStore(root);
+  let musicStore: ReturnType<typeof createMusicStore>;
+  const activeStore = createActiveStore(root, undefined, () => musicStore.collections());
+  musicStore = createMusicStore(root, activeStore);
   const filename = path.resolve(root, 'src/data/personal-overrides.json');
   const token = randomBytes(32).toString('hex');
   let writes: Promise<unknown> = Promise.resolve();
@@ -39,7 +42,7 @@ export function createLocalEditingMiddleware(root: string) {
   }
   return (request: IncomingMessage, response: ServerResponse, next: () => void) => {
     const endpoint = request.url?.split('?')[0];
-    if (endpoint !== localOverridesEndpoint && endpoint !== '/__archive/currently-active') return next();
+    if (![localOverridesEndpoint, '/__archive/currently-active', '/__archive/music-membership'].includes(endpoint ?? '')) return next();
     response.setHeader('Cache-Control', 'no-store');
     response.setHeader('Content-Type', 'application/json');
     // Vite's general CORS policy must never expose the editing token.
@@ -47,6 +50,7 @@ export function createLocalEditingMiddleware(root: string) {
     const send = (status: number, body: unknown) => { response.statusCode = status; response.end(JSON.stringify(body)); };
     if (!allowed(request)) return send(403, { error: 'Local editing requires a same-origin loopback connection.' });
     if (request.method === 'GET') {
+      if (endpoint === '/__archive/music-membership') { void musicStore.read().then(state => send(200, { state, token })).catch(() => send(500, { error: 'Could not read album membership.' })); return; }
       if (endpoint === '/__archive/currently-active') { void activeStore.read().then(data => send(200, { ...data, token })).catch(() => send(500, { error: 'Could not read current selections.' })); return; }
       void read().then(overrides => send(200, { overrides, token })).catch(() => send(500, { error: 'Could not read the local overrides file.' }));
       return;
@@ -61,10 +65,23 @@ export function createLocalEditingMiddleware(root: string) {
       for await (const chunk of request) {
         const buffer = Buffer.from(chunk);
         bytes += buffer.length;
-        if (bytes > 16384) return send(413, { error: 'The change is too large.' });
+        if (bytes > (endpoint === '/__archive/music-membership' ? 131072 : 16384)) return send(413, { error: 'The change is too large.' });
         chunks.push(buffer);
       }
       let value: MediaOverride;
+      if (endpoint === '/__archive/music-membership') {
+        try {
+          const payload = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+          let result;
+          if (payload.action === 'search') result = await searchAlbums(payload.title, payload.artist);
+          else if (payload.action === 'resolve') result = await resolveAlbum(payload.id);
+          else if (payload.action === 'add') result = await musicStore.add(payload);
+          else if (payload.action === 'remove') result = await musicStore.remove(payload.id);
+          else if (payload.action === 'restore') result = await musicStore.restore(payload.id);
+          else throw new Error('Unknown music action.');
+          return send(200, result);
+        } catch (error) { return send(400, { error: (error as Error).message }); }
+      }
       if (endpoint === '/__archive/currently-active') {
         try {
           const payload = JSON.parse(Buffer.concat(chunks).toString('utf8'));
@@ -104,7 +121,7 @@ export function localEditingPlugin(): Plugin {
     },
     handleHotUpdate(context) {
       // The confirmed save updates React. Re-importing the file would discard an open editor's state.
-      if ([filename, path.resolve(context.server.config.root, 'src/data/currently-active.json'), path.resolve(context.server.config.root, 'src/data/tv-episodes.json')].includes(path.resolve(context.file))) return [];
+      if ([filename, ...['currently-active.json', 'tv-episodes.json', 'music-membership.json'].map(name => path.resolve(context.server.config.root, 'src/data', name))].includes(path.resolve(context.file))) return [];
     },
   };
 }

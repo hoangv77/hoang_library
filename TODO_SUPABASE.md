@@ -14,6 +14,9 @@ as part of the local Phase 3 review.
 - [ ] Design owner-only storage and validation for all three current selections,
   verified episode metadata, episode stills, and personally supplied page images.
   Preserve stable IDs and missing references during migration.
+- [ ] Migrate manual album membership and exclusions separately from Last.fm
+  imports. Preserve custom metadata, restoration snapshots and overrides; clear
+  a matching Currently Playing selection transactionally when removing an album.
 - [ ] Reconnect the Supabase adapter in `src/lib/supabase.ts` only after the new
   schema, RLS, and hosted authorization tests pass. Keep the local workflow.
 

@@ -35,7 +35,7 @@ export function CurrentEditor({ category, item, controller, tracks, canEdit, set
   const playing = draft && 'albumId' in draft ? draft : null;
   const season = watching?.seasonNumber;
   const episodes = season === undefined ? [] : controller.episodes[`${item.id}:${season}`] ?? [];
-  if (!canEdit && !dirty && !busy) return belongs ? <div className="current-detail-note"><p className="mono">{label}</p>{current && 'bookId' in current && <><p>{current.pageNumber ? `Page ${current.pageNumber}` : 'Page not specified'}</p>{current.pageImage ? <img className="supplied-page" src={current.pageImage} alt="Personally supplied book page" /> : <p className="field-note">The stand shows a blank-page illustration.</p>}</>}{current && 'screenId' in current && <p>{current.episodeNumber !== undefined ? `Season ${current.seasonNumber} · Episode ${current.episodeNumber}` : 'No episode selected'}</p>}</div> : null;
+  if (!canEdit && !dirty && !busy) return belongs ? <div className="current-detail-note"><p className="mono">{label}</p>{current && 'bookId' in current && <><p>{current.pageNumber ? `Page ${current.pageNumber}` : 'Page not specified'}</p>{current.pageImage ? <img className="supplied-page" src={current.pageImage} alt="Personally supplied book page" /> : <p className="field-note">No page image supplied. The stand displays this book’s cover.</p>}</>}{current && 'screenId' in current && <p>{current.episodeNumber !== undefined ? `Season ${current.seasonNumber} · Episode ${current.episodeNumber}` : 'No episode selected'}</p>}</div> : null;
   return <form className="owner-editor current-editor" aria-label={`Edit ${label}`} onSubmit={async event => {
     event.preventDefault(); if (pending.current || !canEdit) return;
     pending.current = true; setBusy(true); setError(''); setMessage('');
@@ -49,7 +49,7 @@ export function CurrentEditor({ category, item, controller, tracks, canEdit, set
       {reading && <>
         <label>Current page<input type="number" min="1" max={'editionPageCount' in item ? item.editionPageCount : undefined} value={reading.pageNumber ?? ''} onChange={event => update({ ...reading, pageNumber: event.target.value ? Number(event.target.value) : undefined })} /></label>
         <label>Local page image<input type="text" value={reading.pageImage ?? ''} placeholder="/page-images/my-book.webp" onChange={event => update({ ...reading, pageImage: event.target.value || undefined })} /></label>
-        <p className="field-note">Place your image in public/page-images and enter its /page-images/ filename. Blank pages are an illustration when no image is supplied.</p>
+        <p className="field-note">Place your image in public/page-images and enter its /page-images/ filename. Page images appear in reading details; the empty stand uses a blank-page illustration.</p>
       </>}
       {playing && <label>Song<select aria-label="Song" value={playing.trackId ?? ''} onChange={event => update({ ...playing, trackId: event.target.value || undefined })}><option value="">No song selected</option>{('trackIds' in item ? item.trackIds.flatMap(id => tracks.find(track => track.id === id && track.albumId === item.id) ?? []) : []).map(track => <option value={track.id} key={track.id}>{track.title}</option>)}</select></label>}
       {watching && 'type' in item && item.type === 'series' && <>

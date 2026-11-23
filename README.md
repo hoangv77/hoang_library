@@ -99,13 +99,22 @@ under `public/artwork/`. Import summaries, including unresolved and ambiguous ID
 are printed and saved in `.cache/books-summary.json` and
 `.cache/screen-summary.json`.
 
-Music includes only normalized albums with at least 20 observed scrobbles after
+Automatic music imports include only normalized albums with at least 70 observed scrobbles after
 event deduplication. Counts cover the supplied CSV, not lifetime totals.
 MusicBrainz matches validate both credited artist and album; unresolved albums
 keep only observed tracks. Verified complete release tracklists are labeled
 separately. Cover Art Archive images are optimized to local WebP. The importer
 preserves owner overrides and current selections; its report is saved to
 `.cache/music-summary.json`. See [music import details](docs/phase-3.md).
+
+In local **Edit collection** mode, choose **Add Album** above the record bin to
+search by title/artist or enter an album manually. Manual albums bypass the
+listening threshold. Album details include **Remove from collection**, with a
+confirmation; **Add Album → Removed albums → Restore** brings one back with its
+saved ratings, favorites, and comments. Removing the currently playing album
+clears that music selection. Membership edits persist separately in
+`src/data/music-membership.json` and survive imports and server restarts.
+Override the automatic threshold with `--min-scrobbles=70` when importing.
 
 Generated sources are `src/data/books.ts`, `src/data/screen.ts`, and
 `src/data/music.ts` / `src/data/music-tracks.ts`. Review their

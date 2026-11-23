@@ -8,7 +8,7 @@ import { albums, tracks } from '../src/data/music';
 import { emptyActive, validateCurrentlyActive, validateCurrentSelection, type ActiveCollections, type ActiveCategory, type Episode } from '../src/lib/currentlyActive';
 import { loadEnv, request } from './utils/cache';
 
-export function createActiveStore(root: string, collections: ActiveCollections = { books, screen, albums, tracks }) {
+export function createActiveStore(root: string, collections: ActiveCollections = { books, screen, albums, tracks }, collectionProvider?: () => Promise<ActiveCollections>) {
   const activePath = path.resolve(root, 'src/data/currently-active.json');
   const episodePath = path.resolve(root, 'src/data/tv-episodes.json');
   let writes: Promise<unknown> = Promise.resolve();
@@ -43,12 +43,21 @@ export function createActiveStore(root: string, collections: ActiveCollections =
   };
   return {
     async read() { return { active: await readActive(), episodes: await readEpisodes() }; },
+    withPlayingRemoval(albumId: string, persistMembership: () => Promise<void>) {
+      return serialize(async () => {
+        const previous = await readActive();
+        const clearing = previous.playing?.albumId === albumId;
+        if (clearing) await atomic(activePath, { ...previous, playing: null });
+        try { await persistMembership(); }
+        catch (error) { if (clearing) await atomic(activePath, previous); throw error; }
+      });
+    },
     save(category: ActiveCategory, selection: unknown) {
       return serialize(async () => {
         if (!['reading', 'watching', 'playing'].includes(category)) throw new Error('Invalid current category.');
         const episodeData = await readEpisodes();
         const episodes = Object.values(episodeData).flat();
-        const valid = validateCurrentSelection(category, selection, { ...collections, episodes });
+        const valid = validateCurrentSelection(category, selection, { ...(collectionProvider ? await collectionProvider() : collections), episodes });
         if (category === 'reading' && valid && 'pageImage' in valid && valid.pageImage) {
           const image = await lstat(path.resolve(root, 'public' + valid.pageImage));
           if (!image.isFile() || image.isSymbolicLink()) throw new Error('The page image must exist in public/page-images.');

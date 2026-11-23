@@ -27,6 +27,11 @@ export function useCurrentlyActive(local: boolean) {
     return data;
   };
   return { active, episodes, error,
+    forgetPlayingAlbum(id: string) {
+      // Called only after the server confirms the exclusion and active clear.
+      changed.current = true;
+      setActive(previous => previous.playing?.albumId === id ? { ...previous, playing: null } : previous);
+    },
     async save<K extends ActiveCategory>(category: K, selection: CurrentlyActive[K]) {
       const saved = validateCurrentlyActive(await post({ category, selection }));
       changed.current = true; setActive(saved); setError('');

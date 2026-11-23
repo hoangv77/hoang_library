@@ -15,7 +15,7 @@ export function useDialogFocus(ref: RefObject<HTMLDivElement | null>) {
     const original = document.activeElement as HTMLElement | null;
     const overflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden'; ref.current?.focus();
-    const key = (event: KeyboardEvent) => { if (ref.current) trapFocus(event, ref.current); };
+    const key = (event: KeyboardEvent) => { if (ref.current && !ref.current.inert) trapFocus(event, ref.current); };
     window.addEventListener('keydown', key);
     return () => { document.body.style.overflow = overflow; window.removeEventListener('keydown', key); original?.focus({ preventScroll: true }); };
   }, [ref]);

@@ -1,18 +1,21 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
-import { normalizeMusic, enrichAlbum, albumName, matchingMusicAlbum } from '../scripts/import-music';
+import { normalizeMusic, enrichAlbum, albumName, matchingMusicAlbum, manualAlbum } from '../scripts/import-music';
 import { albums, tracks } from '../src/data/music';
 import { mergeAlbums, validateOverride } from '../src/lib/personalization';
 
 const row = (uts: number, album = 'Home', artist = 'Artist', track = 'Song') => ({ uts: String(uts), album, artist, track });
-test('music aggregation applies exactly 20 after edition normalization and genuine event deduplication', () => {
-  const source = [...Array.from({ length: 19 }, (_, i) => row(1700000000 + i, 'Nineteen')), ...Array.from({ length: 20 }, (_, i) => row(1700000100 + i, i % 2 ? 'Twenty (Deluxe Edition)' : 'Twenty')), ...Array.from({ length: 21 }, (_, i) => row(1700000200 + i, 'Twenty-one'))];
+test('music aggregation applies exactly 70 after edition normalization and genuine event deduplication', () => {
+  const source = [...Array.from({ length: 69 }, (_, i) => row(1700000000 + i, 'Sixty-nine')), ...Array.from({ length: 70 }, (_, i) => row(1700000100 + i, i % 2 ? 'Seventy (Deluxe Edition)' : 'Seventy')), ...Array.from({ length: 71 }, (_, i) => row(1700000200 + i, 'Seventy-one'))];
   source.push(source[0]);
   const result = normalizeMusic(source);
-  assert.equal(result.duplicates, 1); assert.equal(result.events, 60);
-  assert.deepEqual(result.included.map(group => group.album.observedScrobbles), [21, 20]);
-  assert.equal(result.groups.find(group => group.album.title === 'Twenty')!.album.sourceTitles.length, 2);
+  assert.equal(result.duplicates, 1); assert.equal(result.events, 210);
+  assert.deepEqual(result.included.map(group => group.album.observedScrobbles), [71, 70]);
+  assert.equal(result.groups.find(group => group.album.title === 'Seventy')!.album.sourceTitles.length, 2);
+  assert.equal(normalizeMusic(source, 71).included.length, 1);
+  assert.equal(normalizeMusic(source, 69).included.length, 3);
+  assert.throws(() => normalizeMusic(source, 0), /positive whole number/);
   assert.deepEqual(result, normalizeMusic([...source].reverse()));
 });
 test('stable identities keep artists, distinct records and tracks associated across repeat imports', () => {
@@ -56,7 +59,7 @@ test('generated music has bounded inclusion, unique references, local covers and
   assert.ok(albums.length > 0); const ids = new Set(albums.map(album => album.id));
   assert.equal(ids.size, albums.length); assert.equal(new Set(tracks.map(track => track.id)).size, tracks.length);
   for (const album of albums) {
-    assert.ok(album.observedScrobbles >= 20); assert.ok(album.artistId);
+    assert.ok(album.observedScrobbles >= 70); assert.ok(album.artistId);
     if (album.artwork) assert.ok(existsSync('public' + album.artwork));
     const observed = tracks.filter(track => track.albumId === album.id).reduce((sum, track) => sum + track.observedScrobbles, 0);
     assert.equal(observed, album.observedScrobbles);
@@ -65,4 +68,17 @@ test('generated music has bounded inclusion, unique references, local covers and
   const override = validateOverride({ media_type: 'album', media_id: albums[0].id, is_favorite: true, personal_comment: 'A keeper', rating_is_overridden: true, personal_rating: 4 });
   const merged = mergeAlbums(albums, [override]); assert.equal(merged[0].personalRating, 4); assert.equal(merged[0].isFavorite, true); assert.equal(merged[0].personalComment, 'A keeper');
   assert.throws(() => validateOverride({ ...override, personal_rating: 6 }));
+});
+test('an explicitly chosen metadata group cannot use another group’s same-named release', async () => {
+  const groupId = '00000000-0000-0000-0000-000000000001';
+  const album = manualAlbum('Home', 'Artist');
+  const credits = [{ artist: { name: 'Artist' } }];
+  const group = { id: groupId, title: 'Home', 'artist-credit': credits, releases: [{ id: 'edition', status: 'Official' }] };
+  const release = { id: 'edition', title: 'Home', 'artist-credit': credits, 'release-group': { id: 'another-group' }, media: [{ position: 1, 'track-count': 1, tracks: [{ position: 1, title: 'A song' }] }] };
+  const lookup = async (url: string) => url.includes('/release-group/') ? group : url.includes('/release/') ? release : undefined;
+  const rejected = await enrichAlbum(structuredClone(album), [], lookup, groupId);
+  assert.equal(rejected.album.releaseId, undefined); assert.equal(rejected.tracks.length, 0);
+  release['release-group'].id = groupId;
+  const selected = await enrichAlbum(structuredClone(album), [], lookup, groupId);
+  assert.equal(selected.album.musicbrainzId, groupId); assert.equal(selected.album.tracklistSource, 'verified');
 });
