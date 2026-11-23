@@ -99,9 +99,10 @@ return it to the original object. Reduced motion replaces the elaborate movement
 with immediate state changes. Missing images have typeset fallbacks.
 
 Polished gold poster frames, white reflections, and a fading gold glow identify
-screen favorites; books retain gold accents along their spines. The legend and
-detail labels explain their meaning without depending on color alone. Favorites
-are manually selected and independent of ratings. Books use accessible five-star
+screen favorites; favorite books radiate a fading gold halo around their spines.
+The legend and detail labels explain their meaning without depending on color
+alone. Favorites are manually selected and independent of ratings. Books use
+accessible five-star
 ratings; zero means **Unrated**. Screen personal ratings stay on the ten-point
 scale and are separate from IMDb community ratings. Every detail view includes
 **Personal comments**, with **N/A** when no note has been saved.
