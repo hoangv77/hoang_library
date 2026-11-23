@@ -1,4 +1,975 @@
 {
-  "manual": [],
-  "excluded": []
+  "manual": [
+    {
+      "album": {
+        "id": "album-be96fd65c9c5600f4606f572",
+        "artistId": "artist-1aa8a33e2fb691e2781ee881",
+        "title": "AT.LONG.LAST.A$AP",
+        "artist": "A$AP Rocky",
+        "genres": [
+          "cloud rap",
+          "east coast hip hop",
+          "experimental hip hop",
+          "hip hop",
+          "neo soul",
+          "neo-psychedelia",
+          "trap"
+        ],
+        "artwork": "/artwork/music/album-be96fd65c9c5600f4606f572.webp",
+        "artistMbids": [],
+        "sourceAlbumMbids": [],
+        "sourceTitles": [
+          "AT.LONG.LAST.A$AP"
+        ],
+        "observedScrobbles": 0,
+        "lastPlayedAt": "",
+        "trackIds": [
+          "track-aa9e5cac75d607bc91352b24",
+          "track-d0be1b27179841dd0fd97eda",
+          "track-891c1dddda3dc4ad0ca6fb1b",
+          "track-8faf983fcf4113b16cc92a5a",
+          "track-6187b7694898585fe99bcb2d",
+          "track-b0258ed2445fb7e152ae1e7a",
+          "track-86f3a9a62e84caaf3cdc37a2",
+          "track-d5e51aae4a0c217abac303af",
+          "track-36c78affe6b160b2f9e68e41",
+          "track-6e8e2a3915d579b697d9b513",
+          "track-f8a4cbdc4e363d8f918274e3",
+          "track-2cdb18c97898fc0d4180158a",
+          "track-1566929c4526228d7768c32f",
+          "track-e0ea11afbfe4c30ab32b278b",
+          "track-2c8472e9bdb31dbdb8999a51",
+          "track-22aa3cc4d0992e58d4d52a13",
+          "track-6badfe557fdb1ba0807afb40",
+          "track-9785b718ee2c14dd6c0d69e8"
+        ],
+        "tracklistSource": "verified",
+        "metadataStatus": "resolved",
+        "origin": "manual",
+        "releaseId": "1327e6fb-04eb-48f7-a1c8-88013d2f4197",
+        "musicbrainzId": "10a526a7-9d24-463f-8c0b-16ac98027460",
+        "year": 2015,
+        "verifiedTrackIds": [
+          "track-aa9e5cac75d607bc91352b24",
+          "track-d0be1b27179841dd0fd97eda",
+          "track-891c1dddda3dc4ad0ca6fb1b",
+          "track-8faf983fcf4113b16cc92a5a",
+          "track-6187b7694898585fe99bcb2d",
+          "track-b0258ed2445fb7e152ae1e7a",
+          "track-86f3a9a62e84caaf3cdc37a2",
+          "track-d5e51aae4a0c217abac303af",
+          "track-36c78affe6b160b2f9e68e41",
+          "track-6e8e2a3915d579b697d9b513",
+          "track-f8a4cbdc4e363d8f918274e3",
+          "track-2cdb18c97898fc0d4180158a",
+          "track-1566929c4526228d7768c32f",
+          "track-e0ea11afbfe4c30ab32b278b",
+          "track-2c8472e9bdb31dbdb8999a51",
+          "track-22aa3cc4d0992e58d4d52a13",
+          "track-6badfe557fdb1ba0807afb40",
+          "track-9785b718ee2c14dd6c0d69e8"
+        ]
+      },
+      "tracks": [
+        {
+          "id": "track-aa9e5cac75d607bc91352b24",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Holy Ghost",
+          "discNumber": 1,
+          "trackNumber": 1,
+          "durationMs": 191000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "b1c9673d-72ca-4494-8d9c-c92108f6f3af"
+          ]
+        },
+        {
+          "id": "track-d0be1b27179841dd0fd97eda",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Canal St.",
+          "discNumber": 1,
+          "trackNumber": 2,
+          "durationMs": 227000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "3d649e4c-341e-43ea-ad4b-5c88ab18fb1a"
+          ]
+        },
+        {
+          "id": "track-891c1dddda3dc4ad0ca6fb1b",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Fine Whine",
+          "discNumber": 1,
+          "trackNumber": 3,
+          "durationMs": 218000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "c0ad0e48-c821-4de9-9a39-735646ac207d"
+          ]
+        },
+        {
+          "id": "track-8faf983fcf4113b16cc92a5a",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "L$D",
+          "discNumber": 1,
+          "trackNumber": 4,
+          "durationMs": 238000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "5794b69c-fe62-4af4-ae20-188a0583c3dd"
+          ]
+        },
+        {
+          "id": "track-6187b7694898585fe99bcb2d",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Excuse Me",
+          "discNumber": 1,
+          "trackNumber": 5,
+          "durationMs": 238000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "11375358-f9d0-4e28-b8e7-2fb615957f76"
+          ]
+        },
+        {
+          "id": "track-b0258ed2445fb7e152ae1e7a",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "JD",
+          "discNumber": 1,
+          "trackNumber": 6,
+          "durationMs": 105000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "d4c52d7c-bd67-47ca-90a2-3c77c99f2761"
+          ]
+        },
+        {
+          "id": "track-86f3a9a62e84caaf3cdc37a2",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Lord Pretty Flacko Jodye 2",
+          "discNumber": 1,
+          "trackNumber": 7,
+          "durationMs": 127000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "7ad5e082-6172-4408-9a07-9a0f69fdf1c8"
+          ]
+        },
+        {
+          "id": "track-d5e51aae4a0c217abac303af",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Electric Body",
+          "discNumber": 1,
+          "trackNumber": 8,
+          "durationMs": 255000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "cd6b1dc7-74e2-49f2-b0b5-d493380e3c30"
+          ]
+        },
+        {
+          "id": "track-36c78affe6b160b2f9e68e41",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Jukebox Joints",
+          "discNumber": 1,
+          "trackNumber": 9,
+          "durationMs": 324000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "73397e17-ebd0-47d3-99e1-6305b7d37e53"
+          ]
+        },
+        {
+          "id": "track-6e8e2a3915d579b697d9b513",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Max B",
+          "discNumber": 1,
+          "trackNumber": 10,
+          "durationMs": 241000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "9183a0ab-8caa-42d1-8a2e-3cd5fc25f943"
+          ]
+        },
+        {
+          "id": "track-f8a4cbdc4e363d8f918274e3",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Pharsyde",
+          "discNumber": 1,
+          "trackNumber": 11,
+          "durationMs": 222000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "e0018b6b-c9a8-4603-885a-a0e7b499f9bb"
+          ]
+        },
+        {
+          "id": "track-2cdb18c97898fc0d4180158a",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Wavybone",
+          "discNumber": 1,
+          "trackNumber": 12,
+          "durationMs": 303000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "0fa9cc8e-7a0f-4a06-b297-9416e0ab089d"
+          ]
+        },
+        {
+          "id": "track-1566929c4526228d7768c32f",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "West Side Highway",
+          "discNumber": 1,
+          "trackNumber": 13,
+          "durationMs": 176000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "4a8638fe-2fab-4a90-b100-34236f61a021"
+          ]
+        },
+        {
+          "id": "track-e0ea11afbfe4c30ab32b278b",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Better Things",
+          "discNumber": 1,
+          "trackNumber": 14,
+          "durationMs": 199000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "99520d35-8dbc-40ca-9290-d78424f71d4b"
+          ]
+        },
+        {
+          "id": "track-2c8472e9bdb31dbdb8999a51",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "M’$",
+          "discNumber": 1,
+          "trackNumber": 15,
+          "durationMs": 233000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "548d1742-dfe3-4d6d-86d4-9b457967e04b"
+          ]
+        },
+        {
+          "id": "track-22aa3cc4d0992e58d4d52a13",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Dreams (interlude)",
+          "discNumber": 1,
+          "trackNumber": 16,
+          "durationMs": 136000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "d82538a3-a866-4822-b626-506caefe218b"
+          ]
+        },
+        {
+          "id": "track-6badfe557fdb1ba0807afb40",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Everyday",
+          "discNumber": 1,
+          "trackNumber": 17,
+          "durationMs": 261000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "f3846666-5300-400e-acfc-83907975c2d0"
+          ]
+        },
+        {
+          "id": "track-9785b718ee2c14dd6c0d69e8",
+          "albumId": "album-be96fd65c9c5600f4606f572",
+          "title": "Back Home",
+          "discNumber": 1,
+          "trackNumber": 18,
+          "durationMs": 278000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "16759ae2-70a6-4a32-bcc9-7f22ba0c09a6"
+          ]
+        }
+      ]
+    },
+    {
+      "album": {
+        "id": "album-918fe14a8527ee37fc36f6fd",
+        "artistId": "artist-8b05f8ce001bcd3dea774ac1",
+        "title": "Skinty Fia",
+        "artist": "Fontaines D.C.",
+        "genres": [
+          "alternative rock",
+          "indie rock",
+          "post-punk",
+          "rock"
+        ],
+        "artwork": "/artwork/music/album-918fe14a8527ee37fc36f6fd.webp",
+        "artistMbids": [],
+        "sourceAlbumMbids": [],
+        "sourceTitles": [
+          "Skinty Fia"
+        ],
+        "observedScrobbles": 0,
+        "lastPlayedAt": "",
+        "trackIds": [
+          "track-f974593ad5ea5b6ccdf2b379",
+          "track-e5368ddc04408ae2cf43bed7",
+          "track-89415f3f8f1111b6a2e0112b",
+          "track-e8b5ea240b6fc3576fc7b005",
+          "track-82edf08a9d4c1ec1f6184044",
+          "track-e1164632441c9df4e8414bb0",
+          "track-204f624179cc7cf44b36215c",
+          "track-10a890a208e30dd2bb108a99",
+          "track-ddc5dcc19fa0f93c7e5b6ae2",
+          "track-838f517fa330902a986a772a"
+        ],
+        "tracklistSource": "verified",
+        "metadataStatus": "resolved",
+        "origin": "manual",
+        "releaseId": "269f2447-ec14-4a5c-8589-6488968ccc46",
+        "musicbrainzId": "aa2f908a-5aba-40c1-a198-3d0ad4f43486",
+        "year": 2022,
+        "verifiedTrackIds": [
+          "track-f974593ad5ea5b6ccdf2b379",
+          "track-e5368ddc04408ae2cf43bed7",
+          "track-89415f3f8f1111b6a2e0112b",
+          "track-e8b5ea240b6fc3576fc7b005",
+          "track-82edf08a9d4c1ec1f6184044",
+          "track-e1164632441c9df4e8414bb0",
+          "track-204f624179cc7cf44b36215c",
+          "track-10a890a208e30dd2bb108a99",
+          "track-ddc5dcc19fa0f93c7e5b6ae2",
+          "track-838f517fa330902a986a772a"
+        ]
+      },
+      "tracks": [
+        {
+          "id": "track-f974593ad5ea5b6ccdf2b379",
+          "albumId": "album-918fe14a8527ee37fc36f6fd",
+          "title": "In ár gCroíthe go deo",
+          "discNumber": 1,
+          "trackNumber": 1,
+          "durationMs": 359066,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "e702e2ea-e1b3-4339-b0cd-b784c1781472"
+          ]
+        },
+        {
+          "id": "track-e5368ddc04408ae2cf43bed7",
+          "albumId": "album-918fe14a8527ee37fc36f6fd",
+          "title": "Big Shot",
+          "discNumber": 1,
+          "trackNumber": 2,
+          "durationMs": 253720,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "6143a372-f662-43af-9179-f11bd7da491e"
+          ]
+        },
+        {
+          "id": "track-89415f3f8f1111b6a2e0112b",
+          "albumId": "album-918fe14a8527ee37fc36f6fd",
+          "title": "How Cold Love Is",
+          "discNumber": 1,
+          "trackNumber": 3,
+          "durationMs": 204493,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "afda387f-e400-4342-9db2-134bb4438779"
+          ]
+        },
+        {
+          "id": "track-e8b5ea240b6fc3576fc7b005",
+          "albumId": "album-918fe14a8527ee37fc36f6fd",
+          "title": "Jackie Down the Line",
+          "discNumber": 1,
+          "trackNumber": 4,
+          "durationMs": 241093,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "08410e18-e94b-4ef6-8eaf-a76c720fb5ac"
+          ]
+        },
+        {
+          "id": "track-82edf08a9d4c1ec1f6184044",
+          "albumId": "album-918fe14a8527ee37fc36f6fd",
+          "title": "Bloomsday",
+          "discNumber": 1,
+          "trackNumber": 5,
+          "durationMs": 270360,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "b38f6454-6524-4522-a6fe-2673de91aab3"
+          ]
+        },
+        {
+          "id": "track-e1164632441c9df4e8414bb0",
+          "albumId": "album-918fe14a8527ee37fc36f6fd",
+          "title": "Roman Holiday",
+          "discNumber": 1,
+          "trackNumber": 6,
+          "durationMs": 268906,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "60cf268e-d6e2-4902-8000-d6eeddcf74be"
+          ]
+        },
+        {
+          "id": "track-204f624179cc7cf44b36215c",
+          "albumId": "album-918fe14a8527ee37fc36f6fd",
+          "title": "The Couple Across the Way",
+          "discNumber": 1,
+          "trackNumber": 7,
+          "durationMs": 236586,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "b8a5f585-661b-4562-a90f-423e6f53ee8a"
+          ]
+        },
+        {
+          "id": "track-10a890a208e30dd2bb108a99",
+          "albumId": "album-918fe14a8527ee37fc36f6fd",
+          "title": "Skinty Fia",
+          "discNumber": 1,
+          "trackNumber": 8,
+          "durationMs": 235800,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "47719cbe-db76-41ce-bde8-e1dcce51df84"
+          ]
+        },
+        {
+          "id": "track-ddc5dcc19fa0f93c7e5b6ae2",
+          "albumId": "album-918fe14a8527ee37fc36f6fd",
+          "title": "I Love You",
+          "discNumber": 1,
+          "trackNumber": 9,
+          "durationMs": 305800,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "be9db312-2af0-4770-a56a-81fd382e802a"
+          ]
+        },
+        {
+          "id": "track-838f517fa330902a986a772a",
+          "albumId": "album-918fe14a8527ee37fc36f6fd",
+          "title": "Nabokov",
+          "discNumber": 1,
+          "trackNumber": 10,
+          "durationMs": 321520,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "5b39f50b-63f4-4619-a2ad-402c980b4432"
+          ]
+        }
+      ]
+    },
+    {
+      "album": {
+        "id": "album-b6715c75d6569ff3276a5956",
+        "artistId": "artist-815db2c4816787ed1eba4601",
+        "title": "Adore",
+        "artist": "The Smashing Pumpkins",
+        "genres": [
+          "alternative rock",
+          "dream pop",
+          "electronic",
+          "electronic rock",
+          "gothic rock",
+          "post-grunge",
+          "psychedelic",
+          "rock"
+        ],
+        "artwork": "/artwork/music/album-b6715c75d6569ff3276a5956.webp",
+        "artistMbids": [],
+        "sourceAlbumMbids": [],
+        "sourceTitles": [
+          "Adore"
+        ],
+        "observedScrobbles": 0,
+        "lastPlayedAt": "",
+        "trackIds": [
+          "track-b31a15d03b64e11d23c446ec",
+          "track-1e9036d01902d34d345434bd",
+          "track-2ac6217a15d4c81c45a5f3a1",
+          "track-c236864614dde2ce25dff685",
+          "track-ad25e8d74252eae17adb792e",
+          "track-5e4dd728385b06676c1224c7",
+          "track-f39d0d6791c065b57cb144a0",
+          "track-6f905fe1e1a40a1e57cc3024",
+          "track-d590af701108c2828e96e3e2",
+          "track-5cf93aae21a2b53d25220c57",
+          "track-659f46eea573ef03ffc25151",
+          "track-1bea719872594e8330ddd1f3",
+          "track-04c912cb44466272e2bf07b3",
+          "track-ae01a483926819b90568613c",
+          "track-3b36041fa33c5c8157dcc915",
+          "track-d2e938649bc23db7b2df8cc8"
+        ],
+        "tracklistSource": "verified",
+        "metadataStatus": "resolved",
+        "origin": "manual",
+        "releaseId": "2fa424ce-af0b-4db6-9a29-e6d5cb2309ea",
+        "musicbrainzId": "359699b3-8118-369e-9591-c96dcd07a853",
+        "year": 1998,
+        "verifiedTrackIds": [
+          "track-b31a15d03b64e11d23c446ec",
+          "track-1e9036d01902d34d345434bd",
+          "track-2ac6217a15d4c81c45a5f3a1",
+          "track-c236864614dde2ce25dff685",
+          "track-ad25e8d74252eae17adb792e",
+          "track-5e4dd728385b06676c1224c7",
+          "track-f39d0d6791c065b57cb144a0",
+          "track-6f905fe1e1a40a1e57cc3024",
+          "track-d590af701108c2828e96e3e2",
+          "track-5cf93aae21a2b53d25220c57",
+          "track-659f46eea573ef03ffc25151",
+          "track-1bea719872594e8330ddd1f3",
+          "track-04c912cb44466272e2bf07b3",
+          "track-ae01a483926819b90568613c",
+          "track-3b36041fa33c5c8157dcc915",
+          "track-d2e938649bc23db7b2df8cc8"
+        ]
+      },
+      "tracks": [
+        {
+          "id": "track-b31a15d03b64e11d23c446ec",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "To Sheila",
+          "discNumber": 1,
+          "trackNumber": 1,
+          "durationMs": 288386,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "a5f336ea-fb66-4b5c-b586-2d688254d838"
+          ]
+        },
+        {
+          "id": "track-1e9036d01902d34d345434bd",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "Ava Adore",
+          "discNumber": 1,
+          "trackNumber": 2,
+          "durationMs": 262933,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "32322f9e-9507-430d-852b-7984c92ef237"
+          ]
+        },
+        {
+          "id": "track-2ac6217a15d4c81c45a5f3a1",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "Perfect",
+          "discNumber": 1,
+          "trackNumber": 3,
+          "durationMs": 205560,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "52121ccc-40fe-42ec-8972-95874b7f0c1f"
+          ]
+        },
+        {
+          "id": "track-c236864614dde2ce25dff685",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "Daphne Descends",
+          "discNumber": 1,
+          "trackNumber": 4,
+          "durationMs": 281760,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "1a4770cd-555b-4462-9331-1d52ff70bd98"
+          ]
+        },
+        {
+          "id": "track-ad25e8d74252eae17adb792e",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "Once Upon a Time",
+          "discNumber": 1,
+          "trackNumber": 5,
+          "durationMs": 247920,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "945a6999-1d96-4857-8a5a-e68300b4f239"
+          ]
+        },
+        {
+          "id": "track-5e4dd728385b06676c1224c7",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "Tear",
+          "discNumber": 1,
+          "trackNumber": 6,
+          "durationMs": 355666,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "5aacc393-9bc9-4e81-9162-e49dad9389f2"
+          ]
+        },
+        {
+          "id": "track-f39d0d6791c065b57cb144a0",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "Crestfallen",
+          "discNumber": 1,
+          "trackNumber": 7,
+          "durationMs": 251253,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "6c33a787-4b71-4900-9381-0d778aadeeca"
+          ]
+        },
+        {
+          "id": "track-6f905fe1e1a40a1e57cc3024",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "Appels + Oranjes",
+          "discNumber": 1,
+          "trackNumber": 8,
+          "durationMs": 217560,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "82190b06-c56a-493e-aa63-482564a51e8f"
+          ]
+        },
+        {
+          "id": "track-d590af701108c2828e96e3e2",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "Pug",
+          "discNumber": 1,
+          "trackNumber": 9,
+          "durationMs": 289560,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "d6862143-7847-4381-9ebe-58dec06d674e"
+          ]
+        },
+        {
+          "id": "track-5cf93aae21a2b53d25220c57",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "The Tale of Dusty and Pistol Pete",
+          "discNumber": 1,
+          "trackNumber": 10,
+          "durationMs": 277333,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "5b0446e2-26aa-4c10-9f58-f29c2366ae33"
+          ]
+        },
+        {
+          "id": "track-659f46eea573ef03ffc25151",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "Annie-Dog",
+          "discNumber": 1,
+          "trackNumber": 11,
+          "durationMs": 220426,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "6db3dbe3-10a3-444c-abf8-ed38af6e1f30"
+          ]
+        },
+        {
+          "id": "track-1bea719872594e8330ddd1f3",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "Shame",
+          "discNumber": 1,
+          "trackNumber": 12,
+          "durationMs": 402120,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "6c5ef45d-9edf-4de5-af58-b7c73bdb3253"
+          ]
+        },
+        {
+          "id": "track-04c912cb44466272e2bf07b3",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "Behold! The Night Mare",
+          "discNumber": 1,
+          "trackNumber": 13,
+          "durationMs": 315960,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "32bd0ec2-029f-4454-beff-63a60c224f66"
+          ]
+        },
+        {
+          "id": "track-ae01a483926819b90568613c",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "For Martha",
+          "discNumber": 1,
+          "trackNumber": 14,
+          "durationMs": 499960,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "ec7e44ff-5068-4197-a194-8b528684ba7b"
+          ]
+        },
+        {
+          "id": "track-3b36041fa33c5c8157dcc915",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "Blank Page",
+          "discNumber": 1,
+          "trackNumber": 15,
+          "durationMs": 300160,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "04be941e-73cf-4c71-ade3-e6370fba0826"
+          ]
+        },
+        {
+          "id": "track-d2e938649bc23db7b2df8cc8",
+          "albumId": "album-b6715c75d6569ff3276a5956",
+          "title": "17",
+          "discNumber": 1,
+          "trackNumber": 16,
+          "durationMs": 17600,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "5ce6551b-5ee5-4dfa-8ac9-6729502ecf51"
+          ]
+        }
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "album": {
+        "id": "album-e2f29688e090272df2800e35",
+        "artistId": "artist-de63e24f0026daa694854975",
+        "title": "FORWARD",
+        "artist": "Jordan Ward",
+        "genres": [],
+        "artwork": "/artwork/music/album-e2f29688e090272df2800e35.webp",
+        "artistMbids": [
+          "1592ba81-f73b-4b13-b456-885630a1cfb2"
+        ],
+        "sourceAlbumMbids": [
+          "72fc1252-5fe7-425a-a1b5-3456c3596c11"
+        ],
+        "sourceTitles": [
+          "FORWARD"
+        ],
+        "observedScrobbles": 78,
+        "lastPlayedAt": "2026-09-05T23:08:39.000Z",
+        "trackIds": [
+          "track-b01d1be2fd7d6bff17e6d09e",
+          "track-9c1f4db500a30998b6c4c622",
+          "track-2eb0c97d0c794ff84593b752",
+          "track-27b11dfa3fbbca3871c41d12",
+          "track-5c185c10ae075024affeb20f",
+          "track-4fc6b55b914fd64b890f73e3",
+          "track-2a5d662482a0441a89822472",
+          "track-356658c0daf646470f8d2a99",
+          "track-9f9aaf44068d9714b2f7adf6",
+          "track-6a06da15464e62b20978659c",
+          "track-51f40052c8c443cf12a2e0f8",
+          "track-db35add4f2601d6cea4be15d",
+          "track-33e446df42ad700c21c947b4",
+          "track-3b80e510471e2f87ad1dfaeb",
+          "track-ec97db1654386128e7a9f627",
+          "track-b8e4ebbb862e2b7bfd8690b9"
+        ],
+        "tracklistSource": "verified",
+        "metadataStatus": "resolved",
+        "releaseId": "72fc1252-5fe7-425a-a1b5-3456c3596c11",
+        "musicbrainzId": "29fe68f9-2325-425c-87ee-82c240f5a224",
+        "year": 2023,
+        "verifiedTrackIds": [
+          "track-b01d1be2fd7d6bff17e6d09e",
+          "track-9c1f4db500a30998b6c4c622",
+          "track-2eb0c97d0c794ff84593b752",
+          "track-27b11dfa3fbbca3871c41d12",
+          "track-5c185c10ae075024affeb20f",
+          "track-4fc6b55b914fd64b890f73e3",
+          "track-2a5d662482a0441a89822472",
+          "track-356658c0daf646470f8d2a99",
+          "track-9f9aaf44068d9714b2f7adf6",
+          "track-6a06da15464e62b20978659c",
+          "track-51f40052c8c443cf12a2e0f8",
+          "track-db35add4f2601d6cea4be15d",
+          "track-33e446df42ad700c21c947b4",
+          "track-3b80e510471e2f87ad1dfaeb"
+        ]
+      },
+      "tracks": [
+        {
+          "id": "track-27b11dfa3fbbca3871c41d12",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "FORFOURFORE",
+          "discNumber": 1,
+          "trackNumber": 4,
+          "durationMs": 54000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "c2e499a3-6fe9-411c-aab3-f50ea3c242fc"
+          ]
+        },
+        {
+          "id": "track-2a5d662482a0441a89822472",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "PRICETAG/BEVERLYWOOD",
+          "discNumber": 1,
+          "trackNumber": 7,
+          "durationMs": 139000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "e88bc551-9117-4d78-9206-2725588178f2"
+          ]
+        },
+        {
+          "id": "track-2eb0c97d0c794ff84593b752",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "FAMJAM4000",
+          "discNumber": 1,
+          "trackNumber": 3,
+          "durationMs": 158000,
+          "observedScrobbles": 75,
+          "musicbrainzIds": [
+            "636247ca-0043-4608-9708-07abbe9057dc"
+          ]
+        },
+        {
+          "id": "track-33e446df42ad700c21c947b4",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "SIDEKICK",
+          "discNumber": 1,
+          "trackNumber": 13,
+          "durationMs": 134000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "8710b21e-1ec1-4d34-b735-a60ef16db136"
+          ]
+        },
+        {
+          "id": "track-356658c0daf646470f8d2a99",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "DANCE MACHINE",
+          "discNumber": 1,
+          "trackNumber": 8,
+          "durationMs": 148000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "73c1ca8b-7419-4322-8317-c6428e651d7a"
+          ]
+        },
+        {
+          "id": "track-3b80e510471e2f87ad1dfaeb",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "CHERIMOYA",
+          "discNumber": 1,
+          "trackNumber": 14,
+          "durationMs": 129000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "8d4c2060-1725-49d0-ace1-fcb2a734f536"
+          ]
+        },
+        {
+          "id": "track-4fc6b55b914fd64b890f73e3",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "WHITE CROCS",
+          "discNumber": 1,
+          "trackNumber": 6,
+          "durationMs": 147000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "808a288a-421c-4bfd-8769-21c324a767da"
+          ]
+        },
+        {
+          "id": "track-51f40052c8c443cf12a2e0f8",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "0495",
+          "discNumber": 1,
+          "trackNumber": 11,
+          "durationMs": 139000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "dcd67903-46ec-4a6d-91f8-549bdbc7bcad"
+          ]
+        },
+        {
+          "id": "track-5c185c10ae075024affeb20f",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "311",
+          "discNumber": 1,
+          "trackNumber": 5,
+          "durationMs": 151000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "fbb8fc9a-6d92-499b-8dce-91587989aee3"
+          ]
+        },
+        {
+          "id": "track-6a06da15464e62b20978659c",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "THINK TWICE",
+          "discNumber": 1,
+          "trackNumber": 10,
+          "durationMs": 131000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "4a4b291c-cc31-465a-9900-f07ba28d08cb"
+          ]
+        },
+        {
+          "id": "track-9c1f4db500a30998b6c4c622",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "IDC",
+          "discNumber": 1,
+          "trackNumber": 2,
+          "durationMs": 112000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "e7396b6b-fbc4-4243-a060-906f67723b6f"
+          ]
+        },
+        {
+          "id": "track-9f9aaf44068d9714b2f7adf6",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "FLIGHTS",
+          "discNumber": 1,
+          "trackNumber": 9,
+          "durationMs": 101000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "5adee04e-9ce2-4ae2-80ac-4bce14433181"
+          ]
+        },
+        {
+          "id": "track-b01d1be2fd7d6bff17e6d09e",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "BUSSDOWN",
+          "discNumber": 1,
+          "trackNumber": 1,
+          "durationMs": 114000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "cff00a37-8e1c-4e30-a30a-3eb261703029"
+          ]
+        },
+        {
+          "id": "track-b8e4ebbb862e2b7bfd8690b9",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "IDC (with Joony)",
+          "observedScrobbles": 2,
+          "musicbrainzIds": []
+        },
+        {
+          "id": "track-db35add4f2601d6cea4be15d",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "FORWARD",
+          "discNumber": 1,
+          "trackNumber": 12,
+          "durationMs": 184000,
+          "observedScrobbles": 0,
+          "musicbrainzIds": [
+            "3a5db7bd-a995-43e9-9ad3-2f4fe0d0edcb"
+          ]
+        },
+        {
+          "id": "track-ec97db1654386128e7a9f627",
+          "albumId": "album-e2f29688e090272df2800e35",
+          "title": "SIDEKICK (with Joyce Wrice) - BONUS",
+          "observedScrobbles": 1,
+          "musicbrainzIds": []
+        }
+      ]
+    }
+  ]
 }

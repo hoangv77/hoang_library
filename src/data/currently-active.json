@@ -1,5 +1,15 @@
 {
-  "reading": null,
-  "watching": null,
-  "playing": null
+  "reading": {
+    "bookId": "gr-1772910",
+    "pageNumber": 79
+  },
+  "watching": {
+    "screenId": "tt0108778",
+    "seasonNumber": 1,
+    "episodeNumber": 7
+  },
+  "playing": {
+    "albumId": "album-b6715c75d6569ff3276a5956",
+    "trackId": "track-2ac6217a15d4c81c45a5f3a1"
+  }
 }

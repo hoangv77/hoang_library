@@ -1,1 +1,170 @@
-[]
+[
+  {
+    "media_type": "album",
+    "media_id": "album-0fc23093f78237d116f9fcc1",
+    "is_favorite": true,
+    "personal_comment": "let it happen",
+    "rating_is_overridden": true,
+    "personal_rating": 5
+  },
+  {
+    "media_type": "book",
+    "media_id": "gr-17332218",
+    "is_favorite": true,
+    "personal_comment": "the pinnacle of fantasy,\n\n\"honor is dead, but i'll see what i can do\" - one of the best pages of the year",
+    "rating_is_overridden": true,
+    "personal_rating": 5
+  },
+  {
+    "media_type": "book",
+    "media_id": "gr-1772910",
+    "is_favorite": true,
+    "personal_comment": "shoutout amaya for letting me borrow her copy",
+    "rating_is_overridden": true,
+    "personal_rating": 4
+  },
+  {
+    "media_type": "book",
+    "media_id": "gr-7126",
+    "is_favorite": true,
+    "personal_comment": "slow and satisfying",
+    "rating_is_overridden": true,
+    "personal_rating": 5
+  },
+  {
+    "media_type": "book",
+    "media_id": "gr-9712",
+    "is_favorite": false,
+    "personal_comment": "Ted Mosby and fate recommend this book.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt0108778",
+    "is_favorite": true,
+    "personal_comment": "rip mathew perry",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt0240890",
+    "is_favorite": true,
+    "personal_comment": "Made me believe in fate and destiny.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt0386676",
+    "is_favorite": true,
+    "personal_comment": "Genuinely one of the funniest and well executed shows of all time. Heart attack cold open is probably the funniest piece of media I have ever watched and will ever watch.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt0460649",
+    "is_favorite": true,
+    "personal_comment": "my all time comfort show",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt0773262",
+    "is_favorite": true,
+    "personal_comment": "ngl, didn't even finish the whole show. I knew season 4 couldn't be topped. Hungry Man is the most uncomfortable and riveting piece of television maybe ever.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt0816692",
+    "is_favorite": false,
+    "personal_comment": "I did not cry when Coop reunited with Murph.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt0898266",
+    "is_favorite": false,
+    "personal_comment": "Not as good as friends or HIMYM or the office. Did not finish.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt0944947",
+    "is_favorite": true,
+    "personal_comment": "Ignore the last 2 seasons and this is the greatest piece of media to grace my eyes.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt0994314",
+    "is_favorite": true,
+    "personal_comment": "GOAT anime",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt11280740",
+    "is_favorite": false,
+    "personal_comment": "Super interesting.  Kinda slow, high-highs.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt14500082",
+    "is_favorite": false,
+    "personal_comment": "Surprisingly good after the first season. Life went downhill after this got cancelled.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt1632701",
+    "is_favorite": true,
+    "personal_comment": "Just aura farming and larping. Almost made we want to become a lawayer.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt28618556",
+    "is_favorite": false,
+    "personal_comment": "The light novel is very good.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt4158110",
+    "is_favorite": false,
+    "personal_comment": "I still don't understand what is going on in this show. 4x7 is one of the craziest episodes of anything I've ever watched.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt6468322",
+    "is_favorite": false,
+    "personal_comment": "This would never happen in real life but damn was it entertaining.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  },
+  {
+    "media_type": "screen",
+    "media_id": "tt7660850",
+    "is_favorite": false,
+    "personal_comment": "Fire theme song.",
+    "rating_is_overridden": false,
+    "personal_rating": null
+  }
+]
