@@ -7,11 +7,14 @@ import { PersonalComments } from './PersonalComments';
 import { OwnerEditor } from '../owner/OwnerEditor';
 import type { MediaOverride } from '../../lib/personalization';
 import { trapFocus } from '../../hooks/useDialogFocus';
+import { CurrentEditor } from '../owner/CurrentEditor';
+import type { ActiveController } from '../../hooks/useCurrentlyActive';
 
 export type Selection = { kind: 'book' | 'screen'; index: number; rect: DOMRect; element: HTMLButtonElement };
-export function DetailOverlay({ selection, books, screen, onClose, onChange, canEdit = false, importedRating, save }: {
+export function DetailOverlay({ selection, books, screen, onClose, onChange, canEdit = false, importedRating, save, current }: {
   selection: Selection; books: Book[]; screen: ScreenTitle[]; onClose: () => void; onChange: (s: Selection) => void;
   canEdit?: boolean; importedRating?: number; save?: (value: MediaOverride) => Promise<MediaOverride>;
+  current?: ActiveController;
 }) {
   const book = selection.kind === 'book' ? books[selection.index] : undefined;
   const film = selection.kind === 'screen' ? screen[selection.index] : undefined;
@@ -22,8 +25,10 @@ export function DetailOverlay({ selection, books, screen, onClose, onChange, can
   const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const returnFocus = useRef(false);
   const navigationGuard = useRef<(() => boolean) | null>(null);
+  const activeGuard = useRef<(() => boolean) | null>(null);
+  const setActiveGuard = useCallback((guard: (() => boolean) | null) => { activeGuard.current = guard; }, []);
   const setNavigationGuard = useCallback((guard: (() => boolean) | null) => { navigationGuard.current = guard; }, []);
-  const mayLeave = () => !navigationGuard.current || navigationGuard.current();
+  const mayLeave = () => (!navigationGuard.current || navigationGuard.current()) && (!activeGuard.current || activeGuard.current());
   const close = () => { if (closing || !mayLeave()) return; returnFocus.current = true; setClosing(true); setOut(false); closeTimer.current = setTimeout(onClose, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 620); };
   const navigate = (step: number) => {
     if (closing || !mayLeave()) return;
@@ -81,6 +86,7 @@ export function DetailOverlay({ selection, books, screen, onClose, onChange, can
           {item.genres.length > 0 && <p className="detail-genres">{item.genres.join(' / ')}</p>}
           {(book?.blurb || film?.synopsis) && <p className="detail-description">{plainDescription(book?.blurb || film?.synopsis || '')}</p>}
           <PersonalComments comment={item.personalComment} />
+          {current && <CurrentEditor category={book ? 'reading' : 'watching'} item={item} controller={current} tracks={[]} canEdit={canEdit} setNavigationGuard={setActiveGuard} />}
           {save && <OwnerEditor type={selection.kind} id={item.id} item={item} rating={book?.rating ?? film?.personalRating} importedRating={importedRating} canEdit={canEdit} save={save} setNavigationGuard={setNavigationGuard} />}
           <dl className="detail-metadata">
             {film?.director?.length ? <><dt>Directed by</dt><dd>{film.director.join(', ')}</dd></> : null}

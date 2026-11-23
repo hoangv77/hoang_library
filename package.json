@@ -9,7 +9,8 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --import tsx --test tests/*.test.ts tests/*.test.tsx",
     "import:books": "tsx scripts/import-goodreads.ts",
-    "import:screen": "tsx scripts/import-imdb.ts"
+    "import:screen": "tsx scripts/import-imdb.ts",
+    "import:music": "tsx scripts/import-music.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.2",

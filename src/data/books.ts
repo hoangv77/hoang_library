@@ -1,4 +1,5 @@
 export type Book = {
+  editionPageCount?: number;
   id: string; goodreadsId: string; title: string; author: string;
   isbn?: string; isbn13?: string; openLibraryId?: string;
   genres: string[]; cover: string; year?: number; blurb: string;
@@ -44,7 +45,8 @@ export const books: Book[] = [
     "spine": "#a46f43",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL1095427W",
-    "band": "#42270f"
+    "band": "#42270f",
+    "editionPageCount": 532
   },
   {
     "id": "gr-11870085",
@@ -75,7 +77,8 @@ export const books: Book[] = [
     "spine": "#928374",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL16444438W",
-    "band": "#008fc8"
+    "band": "#008fc8",
+    "editionPageCount": 313
   },
   {
     "id": "gr-12505",
@@ -108,7 +111,8 @@ export const books: Book[] = [
     "spine": "#440c0c",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL166925W",
-    "band": "#e90000"
+    "band": "#e90000",
+    "editionPageCount": 667
   },
   {
     "id": "gr-13079982",
@@ -135,7 +139,8 @@ export const books: Book[] = [
     "face": "serif",
     "caps": true,
     "spine": "#3c4c43",
-    "ink": "#faf7f0"
+    "ink": "#faf7f0",
+    "editionPageCount": 249
   },
   {
     "id": "gr-13496",
@@ -169,7 +174,8 @@ export const books: Book[] = [
     "spine": "#8d8f80",
     "ink": "#241f19",
     "openLibraryId": "/works/OL257943W",
-    "band": "#440000"
+    "band": "#440000",
+    "editionPageCount": 835
   },
   {
     "id": "gr-15839976",
@@ -196,7 +202,8 @@ export const books: Book[] = [
     "face": "sans",
     "caps": false,
     "spine": "#7b513d",
-    "ink": "#faf7f0"
+    "ink": "#faf7f0",
+    "editionPageCount": 382
   },
   {
     "id": "gr-170448",
@@ -229,7 +236,8 @@ export const books: Book[] = [
     "spine": "#050505",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL1168007W",
-    "band": "#8a1500"
+    "band": "#8a1500",
+    "editionPageCount": 141
   },
   {
     "id": "gr-17332218",
@@ -262,7 +270,8 @@ export const books: Book[] = [
     "spine": "#1b110c",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL16813053W",
-    "band": "#491101"
+    "band": "#491101",
+    "editionPageCount": 1088
   },
   {
     "id": "gr-17690",
@@ -289,7 +298,8 @@ export const books: Book[] = [
     "face": "serif",
     "caps": false,
     "spine": "#3c4c43",
-    "ink": "#faf7f0"
+    "ink": "#faf7f0",
+    "editionPageCount": 255
   },
   {
     "id": "gr-1772910",
@@ -316,7 +326,8 @@ export const books: Book[] = [
     "face": "serif",
     "caps": false,
     "spine": "#3c4c43",
-    "ink": "#faf7f0"
+    "ink": "#faf7f0",
+    "editionPageCount": 82
   },
   {
     "id": "gr-1885",
@@ -345,7 +356,8 @@ export const books: Book[] = [
     "face": "serif",
     "caps": true,
     "spine": "#344758",
-    "ink": "#faf7f0"
+    "ink": "#faf7f0",
+    "editionPageCount": 279
   },
   {
     "id": "gr-18966806",
@@ -372,7 +384,8 @@ export const books: Book[] = [
     "face": "serif",
     "caps": false,
     "spine": "#344758",
-    "ink": "#faf7f0"
+    "ink": "#faf7f0",
+    "editionPageCount": 524
   },
   {
     "id": "gr-18966819",
@@ -405,7 +418,8 @@ export const books: Book[] = [
     "spine": "#33250b",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL19340986W",
-    "band": "#4e2900"
+    "band": "#4e2900",
+    "editionPageCount": 466
   },
   {
     "id": "gr-2120932",
@@ -438,7 +452,8 @@ export const books: Book[] = [
     "spine": "#832f3e",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL492640W",
-    "band": "#5e001e"
+    "band": "#5e001e",
+    "editionPageCount": 361
   },
   {
     "id": "gr-21853621",
@@ -471,7 +486,8 @@ export const books: Book[] = [
     "spine": "#1c4451",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL17116910W",
-    "band": "#003542"
+    "band": "#003542",
+    "editionPageCount": 440
   },
   {
     "id": "gr-24178",
@@ -504,7 +520,8 @@ export const books: Book[] = [
     "spine": "#768585",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL483391W",
-    "band": "#002c45"
+    "band": "#002c45",
+    "editionPageCount": 184
   },
   {
     "id": "gr-24280",
@@ -538,7 +555,8 @@ export const books: Book[] = [
     "spine": "#461f07",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL1063588W",
-    "band": "#531e00"
+    "band": "#531e00",
+    "editionPageCount": 1488
   },
   {
     "id": "gr-2623",
@@ -571,7 +589,8 @@ export const books: Book[] = [
     "spine": "#3e381e",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL8721462W",
-    "band": "#504314"
+    "band": "#504314",
+    "editionPageCount": 544
   },
   {
     "id": "gr-2654",
@@ -598,7 +617,8 @@ export const books: Book[] = [
     "face": "sans",
     "caps": false,
     "spine": "#653f3b",
-    "ink": "#faf7f0"
+    "ink": "#faf7f0",
+    "editionPageCount": 323
   },
   {
     "id": "gr-28186",
@@ -631,7 +651,8 @@ export const books: Book[] = [
     "spine": "#2e96bb",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL492646W",
-    "band": "#008ac1"
+    "band": "#008ac1",
+    "editionPageCount": 279
   },
   {
     "id": "gr-28187",
@@ -665,7 +686,8 @@ export const books: Book[] = [
     "spine": "#144e4f",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL492658W",
-    "band": "#004152"
+    "band": "#004152",
+    "editionPageCount": 377
   },
   {
     "id": "gr-29227774",
@@ -698,7 +720,8 @@ export const books: Book[] = [
     "spine": "#100d12",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL26353967W",
-    "band": "#85601f"
+    "band": "#85601f",
+    "editionPageCount": 682
   },
   {
     "id": "gr-33257757",
@@ -729,7 +752,8 @@ export const books: Book[] = [
     "spine": "#6f6d68",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL19726995W",
-    "band": "#8f3e00"
+    "band": "#8f3e00",
+    "editionPageCount": 602
   },
   {
     "id": "gr-34002132",
@@ -760,7 +784,8 @@ export const books: Book[] = [
     "spine": "#271e15",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL17834026W",
-    "band": "#590000"
+    "band": "#590000",
+    "editionPageCount": 1248
   },
   {
     "id": "gr-38447",
@@ -794,7 +819,8 @@ export const books: Book[] = [
     "spine": "#bdb981",
     "ink": "#241f19",
     "openLibraryId": "/works/OL675783W",
-    "band": "#5c0000"
+    "band": "#5c0000",
+    "editionPageCount": 311
   },
   {
     "id": "gr-41733839",
@@ -821,7 +847,8 @@ export const books: Book[] = [
     "face": "mono",
     "caps": false,
     "spine": "#c4b9a2",
-    "ink": "#faf7f0"
+    "ink": "#faf7f0",
+    "editionPageCount": 180
   },
   {
     "id": "gr-44767458",
@@ -855,7 +882,8 @@ export const books: Book[] = [
     "spine": "#4f4627",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL893414W",
-    "band": "#4f3b01"
+    "band": "#4f3b01",
+    "editionPageCount": 658
   },
   {
     "id": "gr-4556058",
@@ -888,7 +916,8 @@ export const books: Book[] = [
     "spine": "#010101",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL15270622W",
-    "band": "#de9f18"
+    "band": "#de9f18",
+    "editionPageCount": 381
   },
   {
     "id": "gr-485894",
@@ -922,7 +951,8 @@ export const books: Book[] = [
     "spine": "#957c5f",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL498556W",
-    "band": "#453220"
+    "band": "#453220",
+    "editionPageCount": 201
   },
   {
     "id": "gr-4934",
@@ -955,7 +985,8 @@ export const books: Book[] = [
     "spine": "#2a3757",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL10432709W",
-    "band": "#001648"
+    "band": "#001648",
+    "editionPageCount": 796
   },
   {
     "id": "gr-49552",
@@ -982,7 +1013,8 @@ export const books: Book[] = [
     "face": "serif",
     "caps": false,
     "spine": "#3c4c43",
-    "ink": "#faf7f0"
+    "ink": "#faf7f0",
+    "editionPageCount": 123
   },
   {
     "id": "gr-561456",
@@ -1013,7 +1045,8 @@ export const books: Book[] = [
     "spine": "#133f6c",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL492647W",
-    "band": "#002456"
+    "band": "#002456",
+    "editionPageCount": 352
   },
   {
     "id": "gr-61439040",
@@ -1047,7 +1080,8 @@ export const books: Book[] = [
     "spine": "#766c5e",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL1168083W",
-    "band": "#422b2b"
+    "band": "#422b2b",
+    "editionPageCount": 368
   },
   {
     "id": "gr-6656",
@@ -1080,7 +1114,8 @@ export const books: Book[] = [
     "spine": "#1f1e1d",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL93082W",
-    "band": "#a08255"
+    "band": "#a08255",
+    "editionPageCount": 798
   },
   {
     "id": "gr-6801614",
@@ -1113,7 +1148,8 @@ export const books: Book[] = [
     "spine": "#948953",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL16802401W",
-    "band": "#d5ae08"
+    "band": "#d5ae08",
+    "editionPageCount": 208
   },
   {
     "id": "gr-7126",
@@ -1146,7 +1182,8 @@ export const books: Book[] = [
     "spine": "#46473e",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL36287W",
-    "band": "#66573e"
+    "band": "#66573e",
+    "editionPageCount": 1276
   },
   {
     "id": "gr-7144",
@@ -1175,7 +1212,8 @@ export const books: Book[] = [
     "spine": "#cfba9a",
     "ink": "#241f19",
     "openLibraryId": "/works/OL45018229W",
-    "band": "#db1614"
+    "band": "#db1614",
+    "editionPageCount": 671
   },
   {
     "id": "gr-7235533",
@@ -1206,7 +1244,8 @@ export const books: Book[] = [
     "spine": "#221725",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL15358691W",
-    "band": "#541b00"
+    "band": "#541b00",
+    "editionPageCount": 1007
   },
   {
     "id": "gr-7624",
@@ -1239,7 +1278,8 @@ export const books: Book[] = [
     "spine": "#de462c",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL455327W",
-    "band": "#dd2300"
+    "band": "#dd2300",
+    "editionPageCount": 182
   },
   {
     "id": "gr-865",
@@ -1272,7 +1312,8 @@ export const books: Book[] = [
     "spine": "#ca3320",
     "ink": "#faf7f0",
     "openLibraryId": "/works/OL796465W",
-    "band": "#562902"
+    "band": "#562902",
+    "editionPageCount": 197
   },
   {
     "id": "gr-890",
@@ -1305,7 +1346,8 @@ export const books: Book[] = [
     "spine": "#a58c7b",
     "ink": "#241f19",
     "openLibraryId": "/works/OL23204W",
-    "band": "#993900"
+    "band": "#993900",
+    "editionPageCount": 107
   },
   {
     "id": "gr-9712",
@@ -1338,6 +1380,7 @@ export const books: Book[] = [
     "spine": "#b6b584",
     "ink": "#241f19",
     "openLibraryId": "/works/OL274518W",
-    "band": "#c1900a"
+    "band": "#c1900a",
+    "editionPageCount": 348
   }
 ];

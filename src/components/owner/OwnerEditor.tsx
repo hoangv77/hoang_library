@@ -54,8 +54,8 @@ export function OwnerEditor({ type, id, item, rating, importedRating, canEdit, s
       <p className="field-note">{Array.from(draft.personal_comment ?? '').length} / 2,000 characters · visible to visitors after saving</p>
       <div className="editor-rating">
         <span className="field-label">My rating</span>
-        {type === 'book' ? <>
-          <BookRatingEditor rating={previewRating} onChange={value => update({ rating_is_overridden: true, personal_rating: value })} disabled={saving} />
+        {type !== 'screen' ? <>
+          <BookRatingEditor label={type === 'album' ? 'Album rating' : 'Book rating'} rating={previewRating} onChange={value => update({ rating_is_overridden: true, personal_rating: value })} disabled={saving} />
           <p className="field-note">{draft.rating_is_overridden ? previewRating ? `${previewRating}/5 · custom rating` : 'Intentionally unrated' : `Imported rating · ${importedRating ? `${importedRating}/5` : 'Unrated'}`}</p>
           <div className="rating-options"><button type="button" className="text-button" onClick={() => update({ rating_is_overridden: false, personal_rating: null })}>Use imported rating</button><button type="button" className="text-button" onClick={() => update({ rating_is_overridden: true, personal_rating: null })}>Mark unrated</button></div>
         </> : <label className="screen-rating-select"><span className="sr-only">Personal screen rating</span><select value={!draft.rating_is_overridden ? 'imported' : draft.personal_rating ?? 'unrated'} onChange={e => update({ rating_is_overridden: e.target.value !== 'imported', personal_rating: ['imported', 'unrated'].includes(e.target.value) ? null : Number(e.target.value) })}>

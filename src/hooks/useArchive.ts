@@ -63,7 +63,7 @@ export function useArchive(baseBooks: Book[], baseScreen: ScreenTitle[], backend
     return saved;
   }, [backend, ownerStatus, overridesReady]);
   const collections = useMemo(() => mergeCollections(baseBooks, baseScreen, overrides), [baseBooks, baseScreen, overrides]);
-  return { ...collections, save, ownerStatus, ownerError, overridesReady, editMode: editMode && ownerStatus === 'owner' && overridesReady,
+  return { ...collections, overrides, save, ownerStatus, ownerError, overridesReady, editMode: editMode && ownerStatus === 'owner' && overridesReady,
     setEditMode: (enabled: boolean) => setEditMode(enabled && ownerStatus === 'owner' && overridesReady),
     loadError, retryLoad: () => setReadAttempt(n => n + 1),
     recheckOwner: () => setIdentity(previous => ({ ...previous, revision: previous.revision + 1 })),

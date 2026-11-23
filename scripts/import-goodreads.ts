@@ -17,7 +17,7 @@ export function normalizeBooks(rows: Record<string, string>[]) {
       rating: number(row['My Rating']) ?? 0, status: row['Exclusive Shelf'], dateRead,
       finished: dateRead ? new Date(dateRead + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' }) : '',
       year: number(row['Original Publication Year']) ?? number(row['Year Published']),
-      publisher: row.Publisher || '', pages: number(row['Number of Pages']), originalBinding: row.Binding || undefined,
+      publisher: row.Publisher || '', pages: number(row['Number of Pages']), editionPageCount: number(row['Number of Pages']), originalBinding: row.Binding || undefined,
       genres: [], cover: '', blurb: '',
       ...physical(id, number(row['Number of Pages'])),
       spine: ['#3c4c43', '#7b513d', '#b9a47b', '#344758', '#653f3b', '#c4b9a2'][hash(id) % 6], ink: '#faf7f0',

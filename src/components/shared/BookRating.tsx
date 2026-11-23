@@ -11,8 +11,8 @@ export function BookRating({ rating, compact = false }: { rating?: number; compa
   </span>;
 }
 
-export function BookRatingEditor({ rating, onChange, disabled }: { rating?: number; onChange: (rating: number) => void; disabled?: boolean }) {
-  return <div role="radiogroup" aria-label="Book rating" className="rating-editor-stars">
+export function BookRatingEditor({ rating, onChange, disabled, label = 'Book rating' }: { rating?: number; onChange: (rating: number) => void; disabled?: boolean; label?: string }) {
+  return <div role="radiogroup" aria-label={label} className="rating-editor-stars">
     {[1, 2, 3, 4, 5].map(n => <button type="button" role="radio" aria-checked={rating === n} aria-label={`${n} out of 5 stars`} key={n} disabled={disabled}
       tabIndex={n === (rating || 1) ? 0 : -1} onClick={() => onChange(n)} onKeyDown={e => {
         let next = n;

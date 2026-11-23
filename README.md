@@ -1,6 +1,6 @@
 # hoang's library
 
-A single scene for Hoang's personal library and screen collection. React 19,
+A single scene for Hoang's books, screen titles, and records. React 19,
 TypeScript, Tailwind CSS 4, Vite, and CSS 3D transforms. All collection metadata
 is generated ahead of time; the browser makes no metadata API requests.
 
@@ -15,14 +15,14 @@ npm run dev
 
 Open the printed localhost URL. Build a static deployment with `npm run build`;
 `dist/` can be served by any static host. `npm run preview` serves that build.
-The public archive needs no sign-in. Optional Supabase Auth and a small overrides
-table support private owner editing. There is no search, tracking, public
+The public archive needs no sign-in and stays read-only. Supabase owner access
+is deferred; editing currently uses the local development server. There is no search, tracking, public
 registration, or separate administration dashboard.
 
 ## Edit locally
 
-With Supabase configuration left blank, `npm run dev` enables local editing
-without sign-in. Choose **Edit collection** in the footer, open a book or screen
+`npm run dev` enables local editing without sign-in.
+Choose **Edit collection** in the footer, open a book, screen title, or album,
 title, change its favorite, personal comment, or personal rating, and select
 **Save changes**. **Finish editing** returns to browsing. Cancel discards the
 current draft; saving reports success only after the file write succeeds.
@@ -31,14 +31,20 @@ Changes persist in [src/data/personal-overrides.json](src/data/personal-override
 separately from generated imports. Reloading the page or restarting the server
 keeps them. This file is intentionally tracked public collection data: review
 and commit it when you want those edits included in a deployment. A static build
-includes the saved snapshot and is read-only until Supabase is configured.
+includes the saved snapshot and is always read-only in this phase.
 Edits made after a build require another build to appear in that deployment.
 
 Local file editing runs only on Vite's development server at a loopback address.
-`npm run preview` and deployed builds have no local write endpoint. Leave both
-`VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` unset for local editing;
-when configured, the app uses the existing Supabase owner sign-in flow instead.
-An incomplete/invalid Supabase configuration stays read-only.
+`npm run preview` and deployed builds have no local write endpoint. Supabase
+variables do not activate hosted editing in Phase 3. See [the future setup TODOs](TODO_SUPABASE.md).
+
+Within a title's overlay, toggle **Currently Reading**, **Currently Watching**,
+or **Currently Playing**, choose optional page/episode/song details, then select
+**Save current selection**. Uncheck the toggle and save to clear it. These saves
+are independent from **Save changes** for ratings, comments and favorites.
+The three categories can coexist. Their stable IDs persist separately in
+`src/data/currently-active.json`; imports never overwrite them. See
+[the Phase 3 guide](docs/phase-3.md) for page images, episode lookups, and recovery.
 
 ## Update the collection
 
@@ -50,6 +56,7 @@ never use a `VITE_` prefix for credentials. The existing `.env` is ignored.
 ```powershell
 npm run import:books -- 'C:\path\to\goodreads_library_export.csv'
 npm run import:screen -- 'C:\path\to\imdb-export.csv'
+npm run import:music -- 'C:\path\to\lastfm-history.csv'
 ```
 
 To replace an IMDb export while keeping absent titles with personal work, use:
@@ -92,7 +99,16 @@ under `public/artwork/`. Import summaries, including unresolved and ambiguous ID
 are printed and saved in `.cache/books-summary.json` and
 `.cache/screen-summary.json`.
 
-Generated sources are `src/data/books.ts` and `src/data/screen.ts`. Review their
+Music includes only normalized albums with at least 20 observed scrobbles after
+event deduplication. Counts cover the supplied CSV, not lifetime totals.
+MusicBrainz matches validate both credited artist and album; unresolved albums
+keep only observed tracks. Verified complete release tracklists are labeled
+separately. Cover Art Archive images are optimized to local WebP. The importer
+preserves owner overrides and current selections; its report is saved to
+`.cache/music-summary.json`. See [music import details](docs/phase-3.md).
+
+Generated sources are `src/data/books.ts`, `src/data/screen.ts`, and
+`src/data/music.ts` / `src/data/music-tracks.ts`. Review their
 diffs after importing. The generated public files intentionally include collection
 membership, titles, external IDs, bibliographic metadata, personal ratings,
 reading status/completion dates, list addition/rating dates, and inferred screen
@@ -102,10 +118,10 @@ available to that site's audience. API credentials and import caches are exclude
 
 ## Browse
 
-The wall and bookshelf scroll independently with touch, trackpads, the mouse
+The single-row wall, bookshelf, and record bin scroll independently with touch, trackpads, the mouse
 wheel, or dragging. Focus either rail and use left/right keys to scroll; Tab
 visits each unique title. Large rails loop with non-tabbable visual copies;
-short collections stay centered. Select any spine or frame for details. Escape
+short collections do not loop. Select any spine, frame, or record for details. Escape
 returns it to the scene; left/right keys browse details. Dialogs trap focus and
 return it to the original object. Reduced motion replaces the elaborate movement
 with immediate state changes. Missing images have typeset fallbacks.
@@ -113,27 +129,27 @@ with immediate state changes. Missing images have typeset fallbacks.
 Polished gold poster frames, white reflections, and a fading gold glow identify
 screen favorites; favorite books radiate a fading gold halo around their spines.
 The legend and detail labels explain their meaning without depending on color
-alone. Favorites are manually selected and independent of ratings. Books use
+alone. Favorites are manually selected and independent of ratings. Books and albums use
 accessible five-star
 ratings; zero means **Unrated**. Screen personal ratings stay on the ten-point
 scale and are separate from IMDb community ratings. Every detail view includes
 **Personal comments**, with **N/A** when no note has been saved.
 
-On opening, saved screen favorites receive the five lower frames around the
-heading first (center, then left/right), followed by the two upper outside frames.
-Additional favorites extend outward along the looping wall. Favorites use their
-existing collection order as a stable tie-breaker. The arrangement is captured
+On opening, saved screen favorites occupy the visible poster slots from left
+to right, beginning at the viewport's left inset. Favorites retain their
+existing collection order. All remaining titles continue along the looping wall. The arrangement is captured
 after saved notes load and stays fixed during editing; reload to see a new
 arrangement. Poster details always refer to the original title, regardless of
 its display position.
 
 ## Optional owner setup
 
+The following is future setup reference, not an active Phase 3 integration.
 Supabase setup has intentionally been left for later; see
 [TODO_SUPABASE.md](TODO_SUPABASE.md) for the remaining deployment work. Local
-development can edit the file described above. Without Supabase configuration,
-production builds show the imported collection plus the saved file snapshot in
-read-only mode, and **Owner access** explains the required setup. Once connected,
+development can edit the files described above. Production builds show the
+imported collection plus saved snapshots in read-only mode. Reconnecting the
+adapter also requires album/current-selection schema work. In that future integration,
 Supabase rows take precedence over matching file snapshot rows. Titles without
 an override retain imported ratings, no favorite, and N/A comments.
 
@@ -172,13 +188,15 @@ an override retain imported ratings, no favorite, and N/A comments.
    `VITE_` values are intentionally included in the frontend build; RLS supplies
    write authorization. Vite refuses private-key/TMDB variables with `VITE_`
    prefixes. See [Supabase's key guidance](https://supabase.com/docs/guides/api/api-keys).
-6. Restart Vite, or rebuild and deploy `dist/` with these build-time variables.
+6. Complete the Phase 3 migration and adapter TODOs before enabling any hosted
+   editing. Configuration alone does not activate it. In a future integration,
+   restart Vite or rebuild `dist/` with these build-time variables.
    Use HTTPS for a deployed archive and Supabase endpoint; local HTTP is accepted
    only for loopback Supabase development. Configure the project's Site URL for
    the deployed origin. This app uses password sign-in, with no OAuth redirects
    or public registration flow.
 
-Use the discreet **Owner access** footer control to sign in, then choose **Enter
+Future owner flow after the TODO work: use **Owner access** to sign in, then choose **Enter
 edit mode**. Open any title, edit its favorite/comment/personal rating, and choose
 **Save changes**. Updates appear after the database confirms persistence. **Cancel
 changes** restores the saved values. Books support keyboard-operated rating stars,
@@ -275,6 +293,9 @@ with the request, so the composition follows the written reference.
 
 Book metadata and cover artwork are provided by [Open Library](https://openlibrary.org).
 Screen metadata and artwork are provided by [TMDB](https://www.themoviedb.org).
+Music metadata is provided by [MusicBrainz](https://musicbrainz.org) and artwork by
+[Cover Art Archive](https://coverartarchive.org). The Phase 3 record-bin and song
+panel use the user's supplied physical-media layout references.
 This product uses the TMDB API but is not endorsed or certified by TMDB.
 The official TMDB logo and notice appear in the on-page credits. Artwork remains
 the property of its respective rights holders; attribution does not transfer rights.

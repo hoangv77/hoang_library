@@ -33,7 +33,7 @@ export function OwnerAccess({ backend, configurationError, status, ownerError, e
     <div className="owner-dialog" role="dialog" aria-modal="true" aria-labelledby="owner-title" ref={dialog} tabIndex={-1} onKeyDown={event => { if (event.key === 'Escape') { event.stopPropagation(); close(); } }}>
       <button className="owner-close" aria-label="Close owner access" onClick={close} disabled={busy}>×</button>
       <p className="eyebrow mono">Private editing</p><h2 id="owner-title">Owner access</h2>
-      {!backend ? <p>{configurationError} Configure the project URL and public key, apply the migration, and provision the owner using the README’s setup instructions.</p> : <>
+      {!backend ? <p>{configurationError || 'This archive is read-only.'}</p> : <>
         {status === 'signed-out' && <form onSubmit={submit} className="owner-sign-in">
           <p>Sign in with the manually provisioned owner account.</p>
           <label htmlFor="owner-email">Email</label><input id="owner-email" type="email" autoComplete="username" value={email} onChange={e => setEmail(e.target.value)} required disabled={busy} />

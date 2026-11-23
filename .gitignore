@@ -30,4 +30,6 @@ build/
 .cache/
 artifacts/
 src/data/personal-overrides.json.*.tmp
+src/data/currently-active.json.*.tmp
+src/data/tv-episodes.json.*.tmp
 *.tsbuildinfo

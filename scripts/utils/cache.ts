@@ -21,7 +21,7 @@ export async function request(url: string, headers: Record<string, string> = {},
   try { const data = await readFile(path); return binary ? data : JSON.parse(data.toString()); } catch { /* cache miss */ }
   if (offline) return undefined;
   const host = new URL(url).host;
-  const delay = host.includes('openlibrary') ? 1100 : 120;
+  const delay = host.includes('openlibrary') || host.includes('musicbrainz') ? 1100 : 120;
   for (let attempt = 0; attempt < 3; attempt++) {
     await pause(Math.max(0, (last.get(host) ?? 0) + delay - Date.now()));
     last.set(host, Date.now());

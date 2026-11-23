@@ -7,9 +7,10 @@ export function useHorizontalRail(loop: boolean, curved = false, openingKey?: st
     const rail = ref.current; if (!rail) return;
     let frame = 0, dragged = false;
     let start: { x: number; scroll: number; pointer: number } | null = null;
+    const segmentWidth = () => rail.querySelector<HTMLElement>('[data-rail-segment]')?.offsetWidth || rail.scrollWidth / 3;
     const update = () => {
       frame = 0;
-      const segment = rail.scrollWidth / 3;
+      const segment = segmentWidth();
       // Let Tab keep the actual focused object on screen rather than wrapping to
       // a decorative copy. Pointer browsing resumes the seamless loop.
       if (loop && segment > rail.clientWidth && !rail.querySelector('button:focus-visible')) {
@@ -53,8 +54,8 @@ export function useHorizontalRail(loop: boolean, curved = false, openingKey?: st
       if (event.target !== rail) return;
       if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
         event.preventDefault();
-        if (event.key === 'Home') rail.scrollLeft = loop ? rail.scrollWidth / 3 : 0;
-        else if (event.key === 'End') rail.scrollLeft = loop ? rail.scrollWidth * 2 / 3 - rail.clientWidth : rail.scrollWidth;
+        if (event.key === 'Home') rail.scrollLeft = loop ? segmentWidth() : 0;
+        else if (event.key === 'End') rail.scrollLeft = loop ? segmentWidth() * 2 - rail.clientWidth : rail.scrollWidth;
         else rail.scrollBy({ left: event.key === 'ArrowLeft' ? -320 : 320, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
       }
     };
@@ -62,8 +63,10 @@ export function useHorizontalRail(loop: boolean, curved = false, openingKey?: st
     rail.addEventListener('pointerdown', down); rail.addEventListener('pointermove', move); rail.addEventListener('pointerup', up); rail.addEventListener('pointercancel', up); rail.addEventListener('lostpointercapture', up);
     rail.addEventListener('click', click, true); rail.addEventListener('keydown', key); rail.addEventListener('focusin', focus);
     const resize = new ResizeObserver(schedule); resize.observe(rail);
-    if (loop) rail.scrollLeft = rail.scrollWidth / 3;
+    if (loop) rail.scrollLeft = segmentWidth();
     if (openingKey) {
+      const startAnchor = rail.querySelector<HTMLElement>('[data-opening-start="true"]');
+      if (startAnchor) rail.scrollLeft += startAnchor.getBoundingClientRect().left - rail.getBoundingClientRect().left - (parseFloat(getComputedStyle(rail).getPropertyValue('--opening-inset')) || 32);
       const anchor = rail.querySelector<HTMLElement>('[data-opening-center="true"]');
       if (anchor) {
         const box = anchor.getBoundingClientRect();

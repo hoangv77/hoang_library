@@ -10,7 +10,7 @@ export const BookShelf = memo(function BookShelf({ items, onOpen }: { items: Boo
   return <section className="bookshelf" aria-label="Bookshelf">
     <div ref={rail} className="book-rail horizontal-rail" tabIndex={0} aria-label="Browse books. Swipe, scroll, or use left and right arrow keys.">
       <div className="book-row">
-        {(loop ? [0, 1, 2] : [0]).map(copy => <div className="book-segment" key={copy}>
+        {(loop ? [0, 1, 2] : [0]).map(copy => <div className="book-segment" data-rail-segment key={copy}>
           {items.map((book, index) => <BookSpine key={`${copy}-${book.id}`} book={book} duplicate={loop && copy !== 1} onOpen={(rect, element) => onOpen({ kind: 'book', index, rect, element })} />)}
         </div>)}
         {!items.length && <p className="empty-collection">The shelf is waiting for its first book.</p>}

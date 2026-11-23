@@ -5,6 +5,8 @@ import path from 'node:path';
 import type { Plugin } from 'vite';
 import { localOverridesEndpoint } from '../src/lib/localBackend';
 import { overrideKey, validateOverride, type MediaOverride } from '../src/lib/personalization';
+import { createActiveStore } from './active-store';
+import type { ActiveCategory } from '../src/lib/currentlyActive';
 
 const loopback = new Set(['127.0.0.1', 'localhost', '[::1]']);
 const localAddresses = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
@@ -12,6 +14,7 @@ const maximumBytes = 2 * 1024 * 1024;
 
 // The endpoint always targets one repository file; request bodies cannot supply paths.
 export function createLocalEditingMiddleware(root: string) {
+  const activeStore = createActiveStore(root);
   const filename = path.resolve(root, 'src/data/personal-overrides.json');
   const token = randomBytes(32).toString('hex');
   let writes: Promise<unknown> = Promise.resolve();
@@ -35,7 +38,8 @@ export function createLocalEditingMiddleware(root: string) {
     } catch { return false; }
   }
   return (request: IncomingMessage, response: ServerResponse, next: () => void) => {
-    if (request.url?.split('?')[0] !== localOverridesEndpoint) return next();
+    const endpoint = request.url?.split('?')[0];
+    if (endpoint !== localOverridesEndpoint && endpoint !== '/__archive/currently-active') return next();
     response.setHeader('Cache-Control', 'no-store');
     response.setHeader('Content-Type', 'application/json');
     // Vite's general CORS policy must never expose the editing token.
@@ -43,6 +47,7 @@ export function createLocalEditingMiddleware(root: string) {
     const send = (status: number, body: unknown) => { response.statusCode = status; response.end(JSON.stringify(body)); };
     if (!allowed(request)) return send(403, { error: 'Local editing requires a same-origin loopback connection.' });
     if (request.method === 'GET') {
+      if (endpoint === '/__archive/currently-active') { void activeStore.read().then(data => send(200, { ...data, token })).catch(() => send(500, { error: 'Could not read current selections.' })); return; }
       void read().then(overrides => send(200, { overrides, token })).catch(() => send(500, { error: 'Could not read the local overrides file.' }));
       return;
     }
@@ -60,6 +65,13 @@ export function createLocalEditingMiddleware(root: string) {
         chunks.push(buffer);
       }
       let value: MediaOverride;
+      if (endpoint === '/__archive/currently-active') {
+        try {
+          const payload = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+          const result = payload.action === 'episodes' ? await activeStore.episodes(payload.screenId, payload.season) : await activeStore.save(payload.category as ActiveCategory, payload.selection);
+          return send(200, result);
+        } catch (error) { return send(400, { error: (error as Error).message }); }
+      }
       try { value = validateOverride(JSON.parse(Buffer.concat(chunks).toString('utf8'))); }
       catch { return send(400, { error: 'Invalid collection override.' }); }
       const save = writes.then(async () => {
@@ -92,7 +104,7 @@ export function localEditingPlugin(): Plugin {
     },
     handleHotUpdate(context) {
       // The confirmed save updates React. Re-importing the file would discard an open editor's state.
-      if (path.resolve(context.file) === filename) return [];
+      if ([filename, path.resolve(context.server.config.root, 'src/data/currently-active.json'), path.resolve(context.server.config.root, 'src/data/tv-episodes.json')].includes(path.resolve(context.file))) return [];
     },
   };
 }

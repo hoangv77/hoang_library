@@ -8,11 +8,10 @@ const fixture = (count: number, favorites: number[]) => Array.from({ length: cou
   ...screen[index % screen.length], id: `title-${index}`, isFavorite: favorites.includes(index),
 }));
 
-test('favorites fill the five lower opening frames, then the upper outside frames', () => {
+test('favorites fill one opening row from left to right in their existing relative order', () => {
   const items = fixture(49, [12, 17, 24, 30, 32, 36, 40, 41, 42]);
   const arranged = arrangePosterWall(items);
-  const slots = [5, 3, 7, 1, 9, 0, 8, 11, 48];
-  // An odd last column has no lower frame; the next available outside lower slot is 11.
+  const slots = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   items.filter(item => item.isFavorite).forEach((item, index) => assert.equal(arranged[slots[index]], item.id));
   assert.equal(arranged.length, items.length);
   assert.equal(new Set(arranged).size, items.length);

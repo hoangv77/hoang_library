@@ -12,5 +12,14 @@ export default defineConfig(({ mode }) => {
       throw new Error('A private credential is configured with a VITE_ prefix. Remove it before serving or building.');
     }
   }
-  return { plugins: [localEditingPlugin(), react(), tailwindcss()] };
+  return {
+    plugins: [localEditingPlugin(), react(), tailwindcss()],
+    build: { rollupOptions: { output: { manualChunks(id) {
+      const filename = id.replaceAll('\\', '/');
+      // Independently cached, bounded collection data avoids one large app bundle.
+      if (filename.endsWith('/src/data/music-tracks.ts')) return 'music-tracks';
+      if (filename.endsWith('/src/data/music.ts')) return 'music-albums';
+      if (filename.includes('/node_modules/')) return 'vendor';
+    } } } },
+  };
 });

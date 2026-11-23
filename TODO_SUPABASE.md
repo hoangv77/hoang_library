@@ -4,6 +4,19 @@ Setup is deferred. Local editing already works with `npm run dev`, without a
 Supabase account or sign-in. Saves go to `src/data/personal-overrides.json` and
 are included in the next static build. Production file editing is disabled.
 
+Phase 3 explicitly keeps production read-only, even when Supabase environment
+variables are present. The adapter and SQL below are retained for future work;
+configuration alone does not enable them. Do not apply or deploy this checklist
+as part of the local Phase 3 review.
+
+- [ ] Extend the migration to support album overrides and the five-star album
+  rating constraint. The existing migration only accepts books and screen titles.
+- [ ] Design owner-only storage and validation for all three current selections,
+  verified episode metadata, episode stills, and personally supplied page images.
+  Preserve stable IDs and missing references during migration.
+- [ ] Reconnect the Supabase adapter in `src/lib/supabase.ts` only after the new
+  schema, RLS, and hosted authorization tests pass. Keep the local workflow.
+
 The Supabase client, owner access UI, override merging, and owner-only SQL policies
 are implemented. These tasks connect and verify a real hosted project:
 
