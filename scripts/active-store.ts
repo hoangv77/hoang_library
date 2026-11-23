@@ -58,10 +58,6 @@ export function createActiveStore(root: string, collections: ActiveCollections =
         const episodeData = await readEpisodes();
         const episodes = Object.values(episodeData).flat();
         const valid = validateCurrentSelection(category, selection, { ...(collectionProvider ? await collectionProvider() : collections), episodes });
-        if (category === 'reading' && valid && 'pageImage' in valid && valid.pageImage) {
-          const image = await lstat(path.resolve(root, 'public' + valid.pageImage));
-          if (!image.isFile() || image.isSymbolicLink()) throw new Error('The page image must exist in public/page-images.');
-        }
         const active = await readActive();
         if (category === 'watching' && valid && 'screenId' in valid && valid.episodeNumber !== undefined) {
           const episode = episodes.find(episode => episode.screenId === valid.screenId && episode.seasonNumber === valid.seasonNumber && episode.episodeNumber === valid.episodeNumber)!;

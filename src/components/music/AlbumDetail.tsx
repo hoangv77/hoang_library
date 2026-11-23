@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { AlbumSelection } from './VinylShelf';
 import type { PersonalAlbum, MediaOverride } from '../../lib/personalization';
 import type { MusicTrack } from '../../lib/musicTypes';
 import type { ActiveController } from '../../hooks/useCurrentlyActive';
+import { useObjectFlight } from '../../hooks/useObjectFlight';
 import { useDialogFocus } from '../../hooks/useDialogFocus';
 import { Artwork } from '../shared/Artwork';
 import { BookRating } from '../shared/BookRating';
@@ -14,31 +15,21 @@ import { ConfirmAlbumRemoval } from './ConfirmAlbumRemoval';
 
 export function AlbumDetail({ selection, albums, tracks, canEdit, current, save, onClose, onChange, remove }: { selection: AlbumSelection; albums: PersonalAlbum[]; tracks: MusicTrack[]; canEdit: boolean; current: ActiveController; save: (value: MediaOverride) => Promise<MediaOverride>; onClose: () => void; onChange: (selection: AlbumSelection) => void; remove?: (id: string) => Promise<void> }) {
   const album = albums.find(item => item.id === selection.id)!;
-  const dialog = useRef<HTMLDivElement>(null), art = useRef<HTMLDivElement>(null);
-  const [out, setOut] = useState(false), [origin, setOrigin] = useState<CSSProperties>({});
-  const [closing, setClosing] = useState(false);
+  const dialog = useRef<HTMLDivElement>(null);
+  const { art, out, closing, close: flyHome } = useObjectFlight('album', album.id, selection.element, onClose);
   const [removing, setRemoving] = useState(false), [removeError, setRemoveError] = useState('');
   const [confirmRemoval, setConfirmRemoval] = useState(false);
   const removalPending = useRef(false);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const ownerGuard = useRef<(() => boolean) | null>(null), activeGuard = useRef<(() => boolean) | null>(null);
   const setOwnerGuard = useCallback((guard: (() => boolean) | null) => { ownerGuard.current = guard; }, []);
   const setActiveGuard = useCallback((guard: (() => boolean) | null) => { activeGuard.current = guard; }, []);
   const mayLeave = () => !removalPending.current && (!ownerGuard.current || ownerGuard.current()) && (!activeGuard.current || activeGuard.current());
   const close = () => {
     if (closing || confirmRemoval || !mayLeave()) return;
-    setClosing(true); setOut(false);
-    closeTimer.current = setTimeout(onClose, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 620);
+    flyHome();
   };
   const navigate = (step: number) => { if (!closing && mayLeave()) onChange({ ...selection, id: albums[(albums.indexOf(album) + step + albums.length) % albums.length].id }); };
-  useDialogFocus(dialog);
-  useEffect(() => () => clearTimeout(closeTimer.current), []);
-  useLayoutEffect(() => {
-    const target = art.current!.getBoundingClientRect(), source = selection.rect;
-    setOrigin({ '--origin-x': `${source.left - target.left + (source.width - target.width) / 2}px`, '--origin-y': `${source.top - target.top + (source.height - target.height) / 2}px`, '--origin-scale': source.width / target.width } as CSSProperties);
-    let next = 0; const frame = requestAnimationFrame(() => { next = requestAnimationFrame(() => setOut(true)); });
-    return () => { cancelAnimationFrame(frame); cancelAnimationFrame(next); };
-  }, [selection]);
+  useDialogFocus(dialog, false);
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
       if (event.defaultPrevented || confirmRemoval) return;
@@ -61,7 +52,7 @@ export function AlbumDetail({ selection, albums, tracks, canEdit, current, save,
     <div className="detail-dialog" ref={dialog} role="dialog" aria-modal="true" aria-labelledby="album-title" tabIndex={-1} inert={confirmRemoval || undefined}>
       <button className="close-detail mono" onClick={close}><span aria-hidden="true">×</span> Close</button>
       <div className="detail-layout album-layout">
-        <div ref={art} className={`detail-art detail-album ${album.isFavorite ? 'is-favorite' : ''}`} style={origin}><Artwork src={album.artwork} title={album.title} subtitle={album.artist} eager /></div>
+        <div ref={art} className={`detail-art detail-album ${album.isFavorite ? 'is-favorite' : ''} ${current.active.playing?.albumId === album.id ? 'is-current' : ''}`}><Artwork src={album.artwork} title={album.title} subtitle={album.artist} eager /><span className="object-depth object-side" aria-hidden="true" /><span className="object-depth object-right" aria-hidden="true" /><span className="object-depth object-top" aria-hidden="true" /><span className="object-back" aria-hidden="true" /></div>
         <div className="detail-copy"><p className="eyebrow mono">From the record bin</p>{album.isFavorite && <p className="favorite-label mono">Personal favorite</p>}<h2 id="album-title">{album.title}</h2><p className="detail-author">{album.artist}</p>
           <p className="detail-facts mono">{[album.year, ...album.genres].filter(Boolean).join(' · ')}</p>
           <div className="detail-ratings"><div><span className="mono">My rating</span><strong><BookRating rating={album.personalRating} /></strong></div><div><span className="mono">Observed scrobbles</span><strong>{album.observedScrobbles}</strong></div></div>

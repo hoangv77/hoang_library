@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useRef, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import type { PersonalBook as Book, PersonalScreenTitle as ScreenTitle } from '../../lib/personalization';
 import { Artwork } from './Artwork';
@@ -6,8 +6,9 @@ import { BookRating } from './BookRating';
 import { PersonalComments } from './PersonalComments';
 import { OwnerEditor } from '../owner/OwnerEditor';
 import type { MediaOverride } from '../../lib/personalization';
-import { trapFocus } from '../../hooks/useDialogFocus';
+import { useDialogFocus } from '../../hooks/useDialogFocus';
 import { CurrentEditor } from '../owner/CurrentEditor';
+import { useObjectFlight } from '../../hooks/useObjectFlight';
 import type { ActiveController } from '../../hooks/useCurrentlyActive';
 
 export type Selection = { kind: 'book' | 'screen'; index: number; rect: DOMRect; element: HTMLButtonElement };
@@ -19,40 +20,23 @@ export function DetailOverlay({ selection, books, screen, onClose, onChange, can
   const book = selection.kind === 'book' ? books[selection.index] : undefined;
   const film = selection.kind === 'screen' ? screen[selection.index] : undefined;
   const item = book ?? film!;
-  const [out, setOut] = useState(false), [closing, setClosing] = useState(false);
-  const [origin, setOrigin] = useState<CSSProperties>({});
-  const art = useRef<HTMLDivElement>(null), dialog = useRef<HTMLDivElement>(null);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const returnFocus = useRef(false);
+  const dialog = useRef<HTMLDivElement>(null);
+  const { art, out, closing, close: flyHome } = useObjectFlight(selection.kind, item.id, selection.element, onClose);
+  useDialogFocus(dialog, false);
   const navigationGuard = useRef<(() => boolean) | null>(null);
   const activeGuard = useRef<(() => boolean) | null>(null);
   const setActiveGuard = useCallback((guard: (() => boolean) | null) => { activeGuard.current = guard; }, []);
   const setNavigationGuard = useCallback((guard: (() => boolean) | null) => { navigationGuard.current = guard; }, []);
   const mayLeave = () => (!navigationGuard.current || navigationGuard.current()) && (!activeGuard.current || activeGuard.current());
-  const close = () => { if (closing || !mayLeave()) return; returnFocus.current = true; setClosing(true); setOut(false); closeTimer.current = setTimeout(onClose, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 620); };
+  const close = () => { if (!closing && mayLeave()) flyHome(); };
   const navigate = (step: number) => {
     if (closing || !mayLeave()) return;
     const length = book ? books.length : screen.length;
     onChange({ ...selection, index: (selection.index + step + length) % length });
   };
-  useLayoutEffect(() => {
-    const target = art.current!.getBoundingClientRect();
-    const source = selection.rect;
-    const scale = source.height / target.height;
-    setOrigin({ '--origin-x': `${source.left + source.width / 2 - (target.left + target.width / 2)}px`, '--origin-y': `${source.top + source.height / 2 - (target.top + target.height / 2)}px`, '--origin-scale': scale, '--origin-turn': selection.kind === 'book' ? '82deg' : '-4deg' } as CSSProperties);
-    let frame2 = 0;
-    const frame1 = requestAnimationFrame(() => { frame2 = requestAnimationFrame(() => setOut(true)); });
-    return () => { cancelAnimationFrame(frame1); cancelAnimationFrame(frame2); };
-  }, [selection]);
-  useEffect(() => {
-    const oldOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden';
-    dialog.current?.focus();
-    return () => { document.body.style.overflow = oldOverflow; clearTimeout(closeTimer.current); if (returnFocus.current) selection.element.focus({ preventScroll: true }); };
-  }, [selection.element]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (e.defaultPrevented) return;
-      trapFocus(e, dialog.current!);
       if (e.key === 'Escape') { e.preventDefault(); close(); }
       // Editing text, selects, and star radios own their arrow keys.
       if (e.target instanceof Element && e.target.closest('input, textarea, select, [contenteditable="true"], [role="radiogroup"]')) return;
@@ -69,9 +53,9 @@ export function DetailOverlay({ selection, books, screen, onClose, onChange, can
     <div className="detail-dialog" ref={dialog} role="dialog" aria-modal="true" aria-labelledby="detail-title" tabIndex={-1}>
       <button className="close-detail mono" onClick={close} aria-label="Close details and return to archive"><span aria-hidden="true">×</span> Close</button>
       <div className="detail-layout">
-        <div className={`detail-art ${book ? 'detail-book' : 'detail-poster'} ${item.isFavorite ? 'is-favorite' : ''}`} ref={art} style={{ ...origin, '--art-color': book?.spine ?? film?.frameColor } as CSSProperties}>
+        <div className={`detail-art ${book ? 'detail-book' : 'detail-poster'} ${item.isFavorite ? 'is-favorite' : ''} ${current && (book ? current.active.reading?.bookId : current.active.watching?.screenId) === item.id ? 'is-current' : ''}`} ref={art} style={{ '--art-color': book?.spine ?? film?.frameColor } as CSSProperties}>
           <Artwork key={item.id} src={book?.cover || film?.poster} title={item.title} subtitle={book?.author ?? String(film?.year ?? '')} eager />
-          {book && <span className="detail-page-edge" aria-hidden="true" />}
+          <span className="object-depth object-side" aria-hidden="true">{book?.title}</span><span className="object-depth object-right" aria-hidden="true" /><span className="object-depth object-top" aria-hidden="true" /><span className="object-back" aria-hidden="true" />
         </div>
         <div className="detail-copy">
           <p className="eyebrow mono">{book ? 'From the bookshelf' : 'From the screen collection'}</p>

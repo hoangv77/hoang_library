@@ -18,6 +18,9 @@ test('current selections validate membership, edition pages, episode ownership a
   assert.deepEqual(validateCurrentSelection('reading', { bookId: book.id, pageNumber: 100 }, { ...collections, books: [book] }), { bookId: book.id, pageNumber: 100 });
   for (const pageImage of ['../private.png', '/page-images/../../secret.png', 'https://example.com/page.png']) assert.equal(safePageImage(pageImage), false);
   assert.equal(safePageImage('/page-images/reading-12.webp'), true);
+  assert.throws(() => validateCurrentSelection('reading', { bookId: book.id, pageImage: '/page-images/reading-12.webp' }, { ...collections, books: [book] }), /no longer supported/);
+  const legacy = { ...emptyActive, reading: { bookId: book.id, pageImage: '/page-images/reading-12.webp' } };
+  assert.deepEqual(validateCurrentlyActive(legacy), legacy);
   assert.throws(() => validateCurrentSelection('reading', { bookId: 'absent' }, collections));
   const series = screen.find(item => item.type === 'series')!, movie = screen.find(item => item.type === 'movie')!;
   assert.throws(() => validateCurrentSelection('watching', { screenId: movie.id, seasonNumber: 1 }, collections));

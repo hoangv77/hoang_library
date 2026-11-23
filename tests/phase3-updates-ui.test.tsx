@@ -9,7 +9,8 @@ import { albums, tracks } from '../src/data/music';
 import { emptyActive, type CurrentlyActive } from '../src/lib/currentlyActive';
 import type { ActiveController } from '../src/hooks/useCurrentlyActive';
 import { useMusicCollection, type MusicController } from '../src/hooks/useMusicCollection';
-import { ReadingStand, WatchingTV } from '../src/components/shared/ActiveObjects';
+import { BookShelf } from '../src/components/books/BookShelf';
+import { VinylShelf } from '../src/components/music/VinylShelf';
 import { PosterWall } from '../src/components/screen/PosterWall';
 import { CurrentEditor } from '../src/components/owner/CurrentEditor';
 import { MusicManager } from '../src/components/music/MusicManager';
@@ -20,42 +21,44 @@ import type { MediaOverride } from '../src/lib/personalization';
 
 afterEach(() => { cleanup(); document.body.innerHTML = ''; });
 const current = (active: CurrentlyActive = emptyActive): ActiveController => ({ active, episodes: {}, error: '', forgetPlayingAlbum() {}, save: async (category, selection) => ({ ...active, [category]: selection }), loadEpisodes: async () => [] });
-test('reading hardcover uses the selected cover/materials and opens before showing the original book details', async () => {
-  const book = books[3]; let opened = -1;
-  const view = render(<ReadingStand books={books} current={current({ ...emptyActive, reading: { bookId: book.id, pageNumber: 12 } })} canEdit={false} onOpen={selection => { opened = selection.index; }} />);
-  const button = ui.getByRole('button', { name: `Currently reading ${book.title}, page 12` });
-  assert.equal((button as HTMLElement).style.getPropertyValue('--read-case'), book.spine);
-  assert.equal(view.container.querySelectorAll('.read-page-edge').length, 3);
-  assert.ok(view.container.querySelector('.read-spine'));
-  if (book.cover) assert.equal(view.container.querySelector('.read-front-cover img')?.getAttribute('src'), book.cover);
-  fireEvent.click(button);
-  assert.equal(opened, -1); assert.ok(button.classList.contains('is-opening'));
-  await waitFor(() => assert.equal(opened, 3));
-});
-test('reading interaction respects reduced motion and preserves personally supplied pages in details', () => {
-  const previous = window.matchMedia;
-  window.matchMedia = query => ({ ...previous(query), matches: query.includes('prefers-reduced-motion') });
-  try {
-    let opened = false;
-    const controller = current({ ...emptyActive, reading: { bookId: books[0].id, pageNumber: 22, pageImage: '/page-images/page-22.webp' } });
-    const view = render(<ReadingStand books={books} current={controller} canEdit={false} onOpen={() => { opened = true; }} />);
-    fireEvent.click(ui.getByRole('button', { name: /Currently reading/ }));
-    assert.equal(opened, true); assert.equal(view.container.querySelector('.is-opening'), null);
-    view.unmount();
-    render(<CurrentEditor category="reading" item={books[0]} controller={controller} tracks={[]} canEdit={false} setNavigationGuard={() => {}} />);
-    assert.ok(ui.getByText('Page 22')); assert.equal(ui.getByAltText('Personally supplied book page').getAttribute('src'), '/page-images/page-22.webp');
-  } finally { window.matchMedia = previous; }
-});
-test('the television scrolls with the poster row without adding duplicate keyboard entries or changing record mapping', () => {
+test('current highlights coexist with favorites on the actual books, albums and framed posters', () => {
   let opened = -1;
-  const controller = current({ ...emptyActive, watching: { screenId: screen[0].id } });
-  const view = render(<PosterWall items={screen} onOpen={() => {}} watching={duplicate => <WatchingTV screen={screen} current={controller} canEdit={false} duplicate={duplicate} onEpisode={() => {}} onOpen={selection => { opened = selection.index; }} />} />);
-  assert.equal(view.container.querySelectorAll('.poster-segment .watching-slot').length, 3);
-  assert.equal(ui.getAllByRole('button', { name: `Currently watching ${screen[0].title}` }).length, 1);
-  fireEvent.click(ui.getByRole('button', { name: `Currently watching ${screen[0].title}` }));
-  assert.equal(opened, 0);
-  assert.equal(view.container.querySelectorAll('.poster-column').length, 0);
+  const book = { ...books[0], isFavorite: true }, album = { ...albums[0], isFavorite: true }, poster = { ...screen[0], isFavorite: true };
+  const view = render(<><BookShelf items={[book]} currentId={book.id} onOpen={selection => { opened = selection.index; }} /><VinylShelf albums={[album]} currentId={album.id} onOpen={() => {}} /><PosterWall items={[poster]} currentId={poster.id} onOpen={() => {}} /></>);
+  assert.equal(view.container.querySelectorAll('.is-current.is-favorite').length, 3);
+  assert.ok(ui.getByRole('button', { name: /currently watching/ }));
+  fireEvent.click(ui.getByRole('button', { name: /currently reading/ })); assert.equal(opened, 0);
+  assert.equal(view.container.querySelector('.reading-stand'), null);
 });
+
+test('page-image controls and display are retired while reading progress is preserved', () => {
+  const controller = current({ ...emptyActive, reading: { bookId: books[0].id, pageNumber: 22, pageImage: '/page-images/page-22.webp' } });
+  const view = render(<CurrentEditor category="reading" item={books[0]} controller={controller} tracks={[]} canEdit={false} setNavigationGuard={() => {}} />);
+  assert.ok(ui.getByText('Page 22')); assert.equal(ui.queryByAltText('Personally supplied book page'), null);
+  view.rerender(<CurrentEditor category="reading" item={books[0]} controller={controller} tracks={[]} canEdit setNavigationGuard={() => {}} />);
+  assert.equal(ui.queryByLabelText('Local page image'), null);
+  assert.ok(ui.getByLabelText('Current page'));
+});
+
+test('the current poster details retain verified episode information and fall back to their own series artwork', () => {
+  const series = screen.find(item => item.type === 'series' && item.poster)!;
+  const controller = current({ ...emptyActive, watching: { screenId: series.id, seasonNumber: 1, episodeNumber: 2 } });
+  controller.episodes[`${series.id}:1`] = [{ screenId: series.id, seasonNumber: 1, episodeNumber: 2, title: 'Saved episode', description: 'Verified description', still: '/artwork/episodes/missing.webp' }];
+  render(<CurrentEditor category="watching" item={series} controller={controller} tracks={[]} canEdit={false} setNavigationGuard={() => {}} />);
+  assert.ok(ui.getByText('Saved episode')); assert.ok(ui.getByText('Verified description'));
+  fireEvent.error(ui.getByAltText('Still from Saved episode'));
+  assert.ok(ui.getByAltText(`${series.title} series artwork`));
+});
+
+test('two-row posters keep one keyboard entry per record and open the correct item', () => {
+  let opened = -1;
+  const view = render(<PosterWall items={screen} currentId={screen[0].id} onOpen={selection => { opened = selection.index; }} />);
+  assert.equal(view.container.querySelectorAll('.poster-column').length, Math.ceil(screen.length / 2) * 3);
+  assert.equal(ui.getAllByRole('button', { name: /currently watching/ }).length, 1);
+  fireEvent.click(ui.getByRole('button', { name: /currently watching/ })); assert.equal(opened, 0);
+  assert.equal(view.container.querySelector('.watching-slot'), null);
+});
+
 test('production music hooks never issue membership requests or allow public mutations', async () => {
   const previous = globalThis.fetch; let requests = 0;
   globalThis.fetch = async () => { requests++; throw new Error('Unexpected production request'); };

@@ -3,6 +3,8 @@ import type { ActiveController } from '../../hooks/useCurrentlyActive';
 import type { Book } from '../../data/books';
 import type { ScreenTitle } from '../../data/screen';
 import type { Album, MusicTrack } from '../../lib/musicTypes';
+import type { Episode } from '../../lib/currentlyActive';
+import { Artwork } from '../shared/Artwork';
 import type { ActiveCategory } from '../../lib/currentlyActive';
 
 export function CurrentEditor({ category, item, controller, tracks, canEdit, setNavigationGuard }: { category: ActiveCategory; item: Book | ScreenTitle | Album; controller: ActiveController; tracks: MusicTrack[]; canEdit: boolean; setNavigationGuard: (guard: (() => boolean) | null) => void }) {
@@ -35,11 +37,12 @@ export function CurrentEditor({ category, item, controller, tracks, canEdit, set
   const playing = draft && 'albumId' in draft ? draft : null;
   const season = watching?.seasonNumber;
   const episodes = season === undefined ? [] : controller.episodes[`${item.id}:${season}`] ?? [];
-  if (!canEdit && !dirty && !busy) return belongs ? <div className="current-detail-note"><p className="mono">{label}</p>{current && 'bookId' in current && <><p>{current.pageNumber ? `Page ${current.pageNumber}` : 'Page not specified'}</p>{current.pageImage ? <img className="supplied-page" src={current.pageImage} alt="Personally supplied book page" /> : <p className="field-note">No page image supplied. The stand displays this book’s cover.</p>}</>}{current && 'screenId' in current && <p>{current.episodeNumber !== undefined ? `Season ${current.seasonNumber} · Episode ${current.episodeNumber}` : 'No episode selected'}</p>}</div> : null;
+  const episode = current && 'screenId' in current ? controller.episodes[`${item.id}:${current.seasonNumber}`]?.find(value => value.episodeNumber === current.episodeNumber) : undefined;
+  if (!canEdit && !dirty && !busy) return belongs ? <div className="current-detail-note"><p className="mono">{label}</p>{current && 'bookId' in current && current.pageNumber && <p>Page {current.pageNumber}</p>}{current && 'screenId' in current && <><p>{current.episodeNumber !== undefined ? `Season ${current.seasonNumber} · Episode ${current.episodeNumber}` : 'No episode selected'}</p>{episode && <><h3>{episode.title}</h3><CurrentEpisodeArtwork episode={episode} item={item as ScreenTitle} /><p>{episode.description || 'Episode description unavailable.'}</p></>}</>}</div> : null;
   return <form className="owner-editor current-editor" aria-label={`Edit ${label}`} onSubmit={async event => {
     event.preventDefault(); if (pending.current || !canEdit) return;
     pending.current = true; setBusy(true); setError(''); setMessage('');
-    try { const result = await controller.save(category, draft); const value = result[category]; setBaseline(value); setDraft(value); setMessage('Current selection saved.'); }
+    try { const result = await controller.save(category, draft && 'bookId' in draft ? { bookId: draft.bookId, ...(draft.pageNumber ? { pageNumber: draft.pageNumber } : {}) } : draft); const value = result[category]; setBaseline(value); setDraft(value); setMessage('Current selection saved.'); }
     catch (error) { setError((error as Error).message); }
     finally { pending.current = false; setBusy(false); }
   }}>
@@ -48,8 +51,6 @@ export function CurrentEditor({ category, item, controller, tracks, canEdit, set
       <label className="favorite-toggle"><input type="checkbox" checked={!!draft} onChange={event => update(event.target.checked ? seed() : null)} />{label}</label>
       {reading && <>
         <label>Current page<input type="number" min="1" max={'editionPageCount' in item ? item.editionPageCount : undefined} value={reading.pageNumber ?? ''} onChange={event => update({ ...reading, pageNumber: event.target.value ? Number(event.target.value) : undefined })} /></label>
-        <label>Local page image<input type="text" value={reading.pageImage ?? ''} placeholder="/page-images/my-book.webp" onChange={event => update({ ...reading, pageImage: event.target.value || undefined })} /></label>
-        <p className="field-note">Place your image in public/page-images and enter its /page-images/ filename. Page images appear in reading details; the empty stand uses a blank-page illustration.</p>
       </>}
       {playing && <label>Song<select aria-label="Song" value={playing.trackId ?? ''} onChange={event => update({ ...playing, trackId: event.target.value || undefined })}><option value="">No song selected</option>{('trackIds' in item ? item.trackIds.flatMap(id => tracks.find(track => track.id === id && track.albumId === item.id) ?? []) : []).map(track => <option value={track.id} key={track.id}>{track.title}</option>)}</select></label>}
       {watching && 'type' in item && item.type === 'series' && <>
@@ -66,4 +67,10 @@ export function CurrentEditor({ category, item, controller, tracks, canEdit, set
     <div className="editor-actions"><button className="quiet-button" disabled={!dirty || busy || !canEdit}>{busy ? loadingEpisodes ? 'Loading episodes…' : 'Saving…' : 'Save current selection'}</button><button type="button" className="text-button" disabled={busy} onClick={() => update(baseline)}>Cancel</button></div>
     {error && <p className="form-error" role="alert">{error}</p>}<p className="save-status" role="status">{busy ? 'Working…' : message}</p>
   </form>;
+}
+
+function CurrentEpisodeArtwork({ episode, item }: { episode: Episode; item: ScreenTitle }) {
+  const [failed, setFailed] = useState<string[]>([]);
+  const artwork = [episode.still, item.backdrop, item.poster].find(path => path && !failed.includes(path));
+  return <>{artwork ? <img className="episode-picture" src={artwork} alt={artwork === episode.still ? `Still from ${episode.title}` : `${item.title} series artwork`} onError={() => setFailed(previous => [...previous, artwork])} /> : <div className="episode-picture"><Artwork title={item.title} subtitle="Artwork unavailable" /></div>}</>;
 }

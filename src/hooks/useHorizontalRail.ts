@@ -48,7 +48,12 @@ export function useHorizontalRail(loop: boolean, curved = false, openingKey?: st
     const up = () => { const active = start; start = null; if (active && rail.hasPointerCapture(active.pointer)) rail.releasePointerCapture(active.pointer); rail.dataset.dragging = 'false'; };
     const click = (event: MouseEvent) => { if (dragged) { event.preventDefault(); event.stopPropagation(); dragged = false; } };
     const focus = (event: FocusEvent) => {
-      if (rail.matches(':focus-within') && event.target instanceof HTMLElement && event.target.matches(':focus-visible')) event.target.scrollIntoView({ block: 'nearest', inline: 'center' });
+      if (event.target instanceof HTMLElement && event.target.dataset.returningFocus) return;
+      if (rail.matches(':focus-within') && event.target instanceof HTMLElement && event.target.matches(':focus-visible')) {
+        const box = event.target.getBoundingClientRect(), bounds = rail.getBoundingClientRect();
+        // Only move this rail. scrollIntoView also moved the whole page vertically.
+        if (box.left < bounds.left || box.right > bounds.right) rail.scrollLeft += box.left + box.width / 2 - bounds.left - bounds.width / 2;
+      }
     };
     const key = (event: KeyboardEvent) => {
       if (event.target !== rail) return;

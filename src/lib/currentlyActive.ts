@@ -27,6 +27,8 @@ export function validateCurrentSelection<K extends ActiveCategory>(category: K, 
     const book = collections?.books.find(item => item.id === value.bookId);
     if (collections && !book) throw new Error('That book is not in the current collection. The saved reference can still be recovered.');
     if (value.pageNumber !== undefined && !whole(value.pageNumber,1,book?.editionPageCount ?? Number.MAX_SAFE_INTEGER)) throw new Error('Choose a valid page within the known edition page count.');
+    if (collections && value.pageImage !== undefined) throw new Error('Page images are no longer supported.');
+    // Read legacy saved references without displaying or deleting owner data.
     if (value.pageImage !== undefined && !safePageImage(value.pageImage)) throw new Error('Use a local image path such as /page-images/book-page.webp.');
     return { bookId: value.bookId, ...(value.pageNumber !== undefined ? {pageNumber:value.pageNumber} : {}), ...(value.pageImage ? {pageImage:value.pageImage} : {}) } as CurrentlyActive[K];
   }

@@ -10,19 +10,21 @@ import { emptyActive, type CurrentlyActive } from '../src/lib/currentlyActive';
 import { useCurrentlyActive, type ActiveController } from '../src/hooks/useCurrentlyActive';
 import { CurrentEditor } from '../src/components/owner/CurrentEditor';
 import { OwnerEditor } from '../src/components/owner/OwnerEditor';
-import { ReadingStand, WatchingTV, PlayingPanel, EpisodeDetail } from '../src/components/shared/ActiveObjects';
+import { PlayingPanel, EpisodeDetail } from '../src/components/shared/ActiveObjects';
 import { VinylShelf } from '../src/components/music/VinylShelf';
+import { BookShelf } from '../src/components/books/BookShelf';
 import { PosterWall } from '../src/components/screen/PosterWall';
 import { mergeAlbums } from '../src/lib/personalization';
 
 afterEach(() => { cleanup(); document.body.innerHTML = ''; });
 const controller = (active: CurrentlyActive = emptyActive): ActiveController => ({ active, episodes: {}, error: '', forgetPlayingAlbum: () => {}, save: async (category, selection) => ({ ...active, [category]: selection }), loadEpisodes: async () => [] });
-test('empty active objects remain neutral regardless of source listening or reading history', () => {
-  const current = controller(), onOpen = () => {};
-  render(<><ReadingStand books={books} current={current} canEdit={false} onOpen={onOpen} /><WatchingTV screen={screen} current={current} canEdit={false} onOpen={onOpen} onEpisode={onOpen} /><PlayingPanel albums={albums} tracks={tracks} current={current} canEdit={false} onOpen={onOpen} /></>);
-  assert.ok(ui.getByText('Not currently reading')); assert.ok(ui.getByText('No title selected')); assert.ok(ui.getByText('Nothing selected')); assert.ok(ui.getByText('Blank-page illustration'));
-  assert.equal(document.querySelectorAll('button:not(:disabled)').length, 0);
+test('empty current selections leave the collections unhighlighted and the player neutral', () => {
+  const view = render(<><BookShelf items={books} onOpen={() => {}} /><PosterWall items={screen} onOpen={() => {}} /><PlayingPanel albums={albums} tracks={tracks} current={controller()} canEdit={false} onOpen={() => {}} /></>);
+  assert.ok(ui.getByText('Nothing selected'));
+  assert.equal(view.container.querySelectorAll('.is-current').length, 0);
+  assert.equal(ui.getByRole('button', { name: 'No album selected' }).hasAttribute('disabled'), true);
 });
+
 test('album selection without a song is explicit and missing records offer local recovery', async () => {
   const current = controller({ ...emptyActive, playing: { albumId: albums[0].id } });
   const view = render(<PlayingPanel albums={albums} tracks={tracks} current={current} canEdit={false} onOpen={() => {}} />);
@@ -79,13 +81,7 @@ test('episode artwork falls back only to its own parent series and links to pare
   assert.ok(ui.getByText('Series artwork · episode still unavailable'));
   fireEvent.click(ui.getByText('View parent series')); assert.ok(parent);
 });
-test('reading covers and episode stills fall back without inventing page or episode content', () => {
-  const reading = controller({ ...emptyActive, reading: { bookId: books[0].id, pageImage: '/page-images/missing.webp' } });
-  const view = render(<ReadingStand books={books} current={reading} canEdit={false} onOpen={() => {}} />);
-  assert.equal(ui.queryByAltText('Personally supplied book page'), null);
-  fireEvent.error(ui.getByAltText(books[0].title));
-  assert.ok(view.container.querySelector('.read-front-cover .artwork-fallback'));
-  view.unmount();
+test('episode stills fall back without inventing episode content', () => {
   const series = screen.find(item => item.type === 'series' && item.poster)!;
   render(<EpisodeDetail episode={{ screenId: series.id, seasonNumber: 1, episodeNumber: 1, title: 'An episode', description: '', still: '/artwork/episodes/missing.webp' }} screen={series} onClose={() => {}} onParent={() => {}} />);
   fireEvent.error(ui.getByAltText('Still from An episode'));
@@ -111,7 +107,7 @@ test('current selections survive fresh hooks and production never calls a write 
     await assert.rejects(production.result.current.save('playing', null), /read-only/); assert.equal(requests, before);
   } finally { globalThis.fetch = original; }
 });
-test('opening anchor positions the first favorite at the visible left inset across viewport widths', () => {
+test('opening anchor centers the two-row wall around the first favorite across viewport widths', () => {
   const originalRect = HTMLElement.prototype.getBoundingClientRect;
   const originalWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'clientWidth');
   const originalScroll = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollWidth');
@@ -119,16 +115,16 @@ test('opening anchor positions the first favorite at the visible left inset acro
   Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, get() { return width; } });
   Object.defineProperty(HTMLElement.prototype, 'scrollWidth', { configurable: true, get() { return span * 3; } });
   HTMLElement.prototype.getBoundingClientRect = function () {
-    if (this.hasAttribute('data-opening-start')) return new DOMRect(span + 48 - this.closest('.poster-rail')!.scrollLeft, 135, 140, 210);
+    if (this.hasAttribute('data-opening-center')) return new DOMRect(span + 48 - this.closest('.poster-rail')!.scrollLeft, 135, 140, 210);
     return new DOMRect(0, 135, width, 255);
   };
   try {
     for (width of [375, 768, 1280]) {
       const items = screen.map((item, index) => ({ ...item, isFavorite: index === 22 || index === 30 }));
       const view = render(<PosterWall items={items} onOpen={() => {}} />);
-      const anchor = view.container.querySelector<HTMLElement>('[data-opening-start]')!;
-      assert.equal(anchor.getBoundingClientRect().left, 32);
-      assert.equal(anchor.querySelector('button')!.getAttribute('data-media-id'), items[22].id);
+      const anchor = view.container.querySelector<HTMLElement>('[data-opening-center]')!;
+      assert.equal(anchor.getBoundingClientRect().left + 70, width / 2);
+      assert.equal(anchor.querySelector('button:last-child')!.getAttribute('data-media-id'), items[22].id);
       view.unmount();
     }
   } finally {

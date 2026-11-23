@@ -15,13 +15,13 @@ to `src/data/personal-overrides.json`.
 Current selections have their own form and **Save current selection** button:
 
 - **Currently Reading**: choose a book, optionally enter a positive page number
-  and local page-image path. Goodreads edition page counts bound the page field
+  for progress. Goodreads edition page counts bound the page field
   when present. Open Library work-level estimates do not impose that bound.
 - **Currently Watching**: choose a movie or series. For a series, enter a season,
   **Load episodes**, choose a verified episode, then save. Leaving the episode
   blank is a valid series selection. TMDB credentials remain server-side in the
   ignored `.env`. Metadata is cached locally; only the chosen episode still is
-  downloaded on save. The TV opens episode details with a parent-series link.
+  downloaded on save. The current poster opens its series details, including the saved episode.
 - **Currently Playing**: choose an album and optionally one of its known songs.
   An album without a track displays **No song selected**. No playback is implied.
 
@@ -29,20 +29,17 @@ Uncheck a category's toggle and save to clear it. Saving replaces that category'
 previous item and preserves the other two. Current selections persist in
 `src/data/currently-active.json`; episode metadata persists in
 `src/data/tv-episodes.json`. Neither importer writes these files. Missing item
-references are preserved; in local edit mode, use **Clear saved selection** on
-the affected object or reimport the missing item. A missing track can be replaced
+references are preserved; in local edit mode, select a replacement in the affected category or reimport the missing item. A missing
+playing album also offers **Clear saved selection** in the song panel. A missing track can be replaced
 from its album's detail editor.
 
-For a page image, place an image you supply in `public/page-images`, for example
-`reading-page.webp`, then enter `/page-images/reading-page.webp` in the book
-editor. Allowed formats are PNG, JPG/JPEG, WebP and AVIF; filenames may use letters,
-numbers, hyphens and underscores. Remote URLs and nested paths are rejected.
-The file must exist when saved. Page images become public build assets and appear
-in the reading details. A selected book rests on the stand with its own front
-cover, material colors, layered page edges and binding. Selecting it opens the
-cover before showing the detail view; reduced motion opens details immediately.
-The empty stand holds a blank open hardcover labeled as an illustration, with
-the understated caption **Not currently reading**.
+The current book, screen title and album glow purple in their own collections.
+Purple takes visual priority over favorite gold without clearing the favorite.
+The legend below the shelf explains both colors with physical media symbols.
+There is no separate reading stand or television widget. Book page images can
+no longer be added or displayed; optional page-number progress remains. Legacy
+page-image references remain readable in saved JSON and are removed only when
+that reading selection is explicitly saved again. Existing image files are not deleted.
 
 Local writes require loopback, same-origin requests and the existing CSRF token.
 Production and `npm run preview` expose no write middleware, make no metadata
@@ -120,20 +117,24 @@ in the [Cover Art Archive API](https://musicbrainz.org/doc/Cover_Art_Archive/API
 
 ## Scene behavior
 
-The poster wall has exactly one row. Once saved overrides load, it captures a
-stable favorite-first order and aligns the first canonical favorite to the visible
-left inset. Saving a favorite does not reorder the wall until reload. Original
-source indices drive detail selection; decorative looping copies are not extra
-keyboard entries. The rails measure actual segment widths for seamless wrapping.
+The poster wall has two staggered rows surrounding the softly faded heading.
+Once saved overrides load, favorites fill the central lower frames and then the
+outside upper frames. Saving a favorite does not reorder the wall until reload.
+Original source indices drive detail selection; decorative looping copies are
+not extra keyboard entries. The rails measure actual segment widths for wrapping.
 
-The modern thin-bezel TV scrolls within the slightly staggered poster row. The
-wooden record bin and song panel sit directly below that row, above the unchanged
-bookshelf. The right-side reading object uses the shelf's layered 3D materials
-and a compact neutral display cradle. The song panel is a manually selected display with a music
-indicator and no playback controls. Footer guidance sits beside the gold legend.
-The scene scrolls vertically on smaller screens. All detail dialogs trap focus,
-return focus on close and guard unsaved edits; reduced-motion settings disable
-decorative motion and transitions.
+Currently Playing sits to the left of a single scrolling row of record sleeves,
+in a small space at the left end of the shared bookshelf. Books fill the rest
+of the shelf. The song panel remains manually selected, with a music indicator
+and no playback controls. Footer legends describe gold favorites and purple
+current selections. The scene scrolls vertically on smaller screens.
+
+Detail views move the same solid cover/frame with visible edge faces through a
+3D turn and return it to the matching visible object, including after Previous /
+Next navigation. Offscreen objects recede locally rather than scrolling the page.
+Closing waits for the animation to finish. Stable scrollbar space, focus without
+page scrolling, and horizontal-only rail focus movement prevent layout jumps.
+Dialogs trap focus and guard unsaved edits; reduced motion skips the flights.
 
 Run `npm run build` and `npm test`. The captured import report is in
 `imports/music-summary.json`. Final local review notes, screenshots and a

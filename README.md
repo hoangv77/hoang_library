@@ -44,7 +44,7 @@ or **Currently Playing**, choose optional page/episode/song details, then select
 are independent from **Save changes** for ratings, comments and favorites.
 The three categories can coexist. Their stable IDs persist separately in
 `src/data/currently-active.json`; imports never overwrite them. See
-[the Phase 3 guide](docs/phase-3.md) for page images, episode lookups, and recovery.
+[the Phase 3 guide](docs/phase-3.md) for current highlights, episode lookups, and recovery.
 
 ## Update the collection
 
