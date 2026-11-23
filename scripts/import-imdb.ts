@@ -1,8 +1,11 @@
 import { pathToFileURL } from 'node:url';
-import type { ScreenTitle } from '../src/data/screen.ts';
+import { readFile } from 'node:fs/promises';
+import { screen as previousScreen, type ScreenTitle } from '../src/data/screen.ts';
 import { date, number, readCsv, requireHeaders } from './utils/csv.ts';
 import { loadEnv, request, summary, writeData } from './utils/cache.ts';
 import { artwork, hash } from './utils/colors.ts';
+import { reconcileScreen } from './utils/reconcile-screen.ts';
+import { validateOverride } from '../src/lib/personalization.ts';
 
 export function normalizeScreen(rows: Record<string, string>[], watchlist = false) {
   requireHeaders(rows, ['Const', 'Title', 'Title Type']);
@@ -30,6 +33,10 @@ export async function run(path: string) {
   // Generic IMDb lists do not encode watched status. Explicitly opt into watchlist semantics.
   const watchlist = process.argv.includes('--watchlist') || /watchlist/i.test(path);
   const screen = normalizeScreen(rows, watchlist);
+  const preserveEdits = process.argv.includes('--preserve-edits');
+  // Validate before making requests or replacing data; malformed saved edits must
+  // never silently cause a personalized title to be dropped.
+  if (preserveEdits) JSON.parse(await readFile('src/data/personal-overrides.json', 'utf8')).forEach(validateOverride);
   const token = process.env.TMDB_READ_ACCESS_TOKEN, key = process.env.TMDB_API_KEY;
   const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
   const tmdb = (endpoint: string) => {
@@ -65,10 +72,20 @@ export async function run(path: string) {
     } else report.unresolved.push(item.id);
     console.log(`Screen ${item.id}: ${item.tmdbId ? 'matched' : 'CSV metadata retained'}`);
   }
-  await writeData('src/data/screen.ts', 'screen', screen); await summary('screen', report);
+  if (preserveEdits) {
+    // Re-read at the end as well, so edits saved while metadata loads also protect membership.
+    const latestOverrides = JSON.parse(await readFile('src/data/personal-overrides.json', 'utf8')).map(validateOverride);
+    const reconciled = reconcileScreen(screen, previousScreen, latestOverrides);
+    await writeData('src/data/screen.ts', 'screen', reconciled.items);
+    const describe = (item: ScreenTitle) => ({ id: item.id, title: item.title });
+    await summary('screen', { ...report, total: reconciled.items.length, added: reconciled.added.map(describe),
+      matched: reconciled.matched.length, retainedWithPersonalWork: reconciled.retained.map(describe), removed: reconciled.removed.map(describe) });
+  } else {
+    await writeData('src/data/screen.ts', 'screen', screen); await summary('screen', report);
+  }
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const path = process.argv[2];
-  if (!path || path.startsWith('--')) throw new Error('Usage: npm run import:screen -- <csv-path> [--watchlist] [--offline]');
+  if (!path || path.startsWith('--')) throw new Error('Usage: npm run import:screen -- <csv-path> [--watchlist] [--preserve-edits] [--offline]');
   await run(path);
 }

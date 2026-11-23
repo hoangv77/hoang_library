@@ -52,6 +52,18 @@ npm run import:books -- 'C:\path\to\goodreads_library_export.csv'
 npm run import:screen -- 'C:\path\to\imdb-export.csv'
 ```
 
+To replace an IMDb export while keeping absent titles with personal work, use:
+
+```powershell
+npm run import:screen -- 'C:\path\to\imdb-export.csv' --preserve-edits
+```
+
+This keeps missing titles with a personal rating, saved favorite, nonblank comment,
+or an explicit custom/unrated rating. Missing titles without personal work are
+removed. Saved overrides stay in their separate file and keep taking precedence
+over imported ratings. The import summary lists additions, retained titles, and
+removals; books are unaffected.
+
 For an IMDb watchlist exported under an arbitrary filename, add `--watchlist`.
 Filenames containing `watchlist` are recognized automatically. Generic list
 exports cannot reliably identify watchlist membership from their headers.
