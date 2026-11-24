@@ -5,14 +5,14 @@ import { FramedPoster } from './FramedPoster';
 import { memo, useEffect, useState, type ReactNode } from 'react';
 import { arrangePosterWall } from '../../lib/posterArrangement';
 
-export const PosterWall = memo(function PosterWall({ items, onOpen, arrangementReady = true, currentId, watching }: { items: ScreenTitle[]; onOpen: (s: Selection) => void; arrangementReady?: boolean; currentId?: string; watching?: (duplicate: boolean) => ReactNode }) {
+export const PosterWall = memo(function PosterWall({ items, onOpen, arrangementReady = true, currentId, watching, compact = false }: { items: ScreenTitle[]; onOpen: (s: Selection) => void; arrangementReady?: boolean; currentId?: string; watching?: (duplicate: boolean) => ReactNode; compact?: boolean }) {
   // Capture once after persisted favorites load. Saving an edit never moves an open title.
   const [openingOrder, setOpeningOrder] = useState(() => arrangementReady ? arrangePosterWall(items) : null);
   useEffect(() => {
     if (!openingOrder && arrangementReady) setOpeningOrder(arrangePosterWall(items));
   }, [items, arrangementReady, openingOrder]);
-  const loop = items.length > 18;
-  const rail = useHorizontalRail(loop, false, openingOrder?.join('|') ?? 'pending');
+  const loop = !compact && items.length > 18;
+  const rail = useHorizontalRail(loop, false, `${compact ? 'compact' : 'desktop'}:${openingOrder?.join('|') ?? 'pending'}`);
   const indexed = new Map(items.map((item, index) => [item.id, { item, index }]));
   const ordered = (openingOrder ?? arrangePosterWall(items)).flatMap(id => indexed.has(id) ? [indexed.get(id)!] : []);
   const known = new Set(ordered.map(({ item }) => item.id));
@@ -20,15 +20,16 @@ export const PosterWall = memo(function PosterWall({ items, onOpen, arrangementR
   const columns = Array.from({ length: Math.ceil(ordered.length / 2) }, (_, i) => ordered.slice(i * 2, i * 2 + 2));
   const center = Math.min(2, Math.floor((columns.length - 1) / 2));
   return <section className="poster-wall" aria-label="Screen poster wall">
+    {compact && watching && <div className="watching-feature">{watching(false)}</div>}
     <div ref={rail} className="poster-rail horizontal-rail" tabIndex={0} aria-label="Browse screen titles. Swipe, scroll, or use left and right arrow keys.">
       <div className="poster-row">{(loop ? [0, 1, 2] : [0]).map(copy => <div className="poster-segment" data-rail-segment key={copy}>
         {columns.map((column, position) => {
           const posters = column.map(({ item, index }) => <FramedPoster key={item.id} item={item} index={index} isCurrent={item.id === currentId} duplicate={loop && copy !== 1} onOpen={(rect, element) => onOpen({ kind: 'screen', index, rect, element })} />);
-          return watching && position === center
+          return !compact && watching && position === center
             ? <div className="watching-slot" key="watching" data-opening-center={!loop || copy === 1 ? true : undefined}>{watching(loop && copy !== 1)}<div className="watching-lower-row">{posters}</div></div>
-            : <div className={`poster-column column-${position % 3}`} key={column[0].item.id} data-opening-center={!watching && position === center && (!loop || copy === 1) ? true : undefined}>{posters}</div>;
+            : <div className={`poster-column column-${position % 3}`} key={column[0].item.id} data-opening-center={!compact && !watching && position === center && (!loop || copy === 1) ? true : undefined}>{posters}</div>;
         })}
-        {!columns.length && watching && <div className="watching-slot" data-opening-center={!loop || copy === 1 ? true : undefined}>{watching(loop && copy !== 1)}</div>}
+        {!compact && !columns.length && watching && <div className="watching-slot" data-opening-center={!loop || copy === 1 ? true : undefined}>{watching(loop && copy !== 1)}</div>}
       </div>)}</div>
       {!items.length && <p className="empty-collection">The wall is waiting for its first frame.</p>}
     </div>

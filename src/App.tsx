@@ -18,6 +18,7 @@ import { useCurrentlyActive } from './hooks/useCurrentlyActive';
 import { useMusicCollection } from './hooks/useMusicCollection';
 import type { Episode } from './lib/currentlyActive';
 import { MusicManager } from './components/music/MusicManager';
+import { useCompactLayout } from './hooks/useCompactLayout';
 
 const snapshot = savedOverrides.map(validateOverride);
 
@@ -34,22 +35,27 @@ export default function App() {
   const tracks = music.tracks;
   const current = useCurrentlyActive(localEditing);
   const canEdit = localEditing && archive.editMode;
+  const compact = useCompactLayout();
+  const readingIndex = books.findIndex(book => book.id === current.active.reading?.bookId);
+  const bookShelf = <BookShelf key="books" compact={compact} items={books} currentId={current.active.reading?.bookId} onOpen={setSelection} />;
   return <>
     <main className="archive-scene" inert={selection || ownerAccess || albumSelection || episodeSelection || musicManager ? true : undefined}>
       <div className="ambient-light" aria-hidden="true" />
-      <PosterWall items={screen} onOpen={setSelection} arrangementReady={archive.overridesReady} currentId={current.active.watching?.screenId} watching={duplicate => <WatchingTV screen={screen} current={current} canEdit={canEdit} duplicate={duplicate} onOpen={setSelection} onEpisode={(episode, element) => setEpisodeSelection({ episode, element })} />} />
       <div className="heading-scrim" aria-hidden="true" />
       <header className="scene-header text-center">
         <TypedTitle />
         {archive.loadError && <p className="archive-notice" role="status">{archive.loadError} <button onClick={archive.retryLoad}>Try again</button></p>}
       </header>
+      <PosterWall compact={compact} items={screen} onOpen={setSelection} arrangementReady={archive.overridesReady} currentId={current.active.watching?.screenId} watching={duplicate => <WatchingTV screen={screen} current={current} canEdit={canEdit} duplicate={duplicate} onOpen={setSelection} onEpisode={(episode, element) => setEpisodeSelection({ episode, element })} />} />
       <div className="collection-shelf">
+        {compact && <div className="reading-shortcut">{readingIndex >= 0 ? <button onClick={event => setSelection({ kind: 'book', index: readingIndex, element: event.currentTarget, rect: event.currentTarget.getBoundingClientRect() })}><span aria-hidden="true">▤</span><span><small className="mono">Currently Reading</small>{books[readingIndex].title}</span></button> : <span className="mono">{current.active.reading ? 'Saved reading selection unavailable' : 'Not currently reading'}</span>}</div>}
+        {compact && bookShelf}
         <section className="shelf-music" aria-label="Music collection">
           <div className="playing-space"><PlayingPanel albums={albums} tracks={tracks} current={current} canEdit={canEdit} onOpen={setAlbumSelection} /></div>
-          <div className="album-browser"><VinylShelf albums={albums} currentId={current.active.playing?.albumId} onOpen={setAlbumSelection} />{canEdit && <button className="add-album-action text-button" disabled={!music.ready} onClick={() => setMusicManager(true)}>Add Album</button>}</div>
+          <div className="album-browser"><VinylShelf compact={compact} albums={albums} currentId={current.active.playing?.albumId} onOpen={setAlbumSelection} />{canEdit && <button className="add-album-action text-button" disabled={!music.ready} onClick={() => setMusicManager(true)}>Add Album</button>}</div>
           {music.error && <p className="music-load-error" role="status">{music.error}</p>}
         </section>
-        <BookShelf items={books} currentId={current.active.reading?.bookId} onOpen={setSelection} />
+        {!compact && bookShelf}
         <div className="shared-shelf-surface shelf-surface" aria-hidden="true" />
       </div>
       {current.error && <p className="current-load-error" role="status">{current.error} Reload the page to retry.</p>}

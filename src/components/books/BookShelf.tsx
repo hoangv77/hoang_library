@@ -4,8 +4,8 @@ import { useHorizontalRail } from '../../hooks/useHorizontalRail';
 import { BookSpine } from './BookSpine';
 import { memo } from 'react';
 
-export const BookShelf = memo(function BookShelf({ items, onOpen, currentId }: { items: Book[]; onOpen: (s: Selection) => void; currentId?: string }) {
-  const loop = items.reduce((n, b) => n + b.width + 2, 0) > 2600;
+export const BookShelf = memo(function BookShelf({ items, onOpen, currentId, compact = false }: { items: Book[]; onOpen: (s: Selection) => void; currentId?: string; compact?: boolean }) {
+  const loop = !compact && items.reduce((n, b) => n + b.width + 2, 0) > 2600;
   const rail = useHorizontalRail(loop, true);
   return <section className="bookshelf" aria-label="Bookshelf">
     <div ref={rail} className="book-rail horizontal-rail" tabIndex={0} aria-label="Browse books. Swipe, scroll, or use left and right arrow keys.">

@@ -3,8 +3,8 @@ import { useHorizontalRail } from '../../hooks/useHorizontalRail';
 import { Artwork } from '../shared/Artwork';
 
 export type AlbumSelection = { id: string; rect: DOMRect; element: HTMLButtonElement };
-export function VinylShelf({ albums, onOpen, currentId }: { albums: PersonalAlbum[]; currentId?: string; onOpen: (selection: AlbumSelection) => void }) {
-  const loop = albums.length > 12;
+export function VinylShelf({ albums, onOpen, currentId, compact = false }: { albums: PersonalAlbum[]; currentId?: string; compact?: boolean; onOpen: (selection: AlbumSelection) => void }) {
+  const loop = !compact && albums.length > 12;
   const rail = useHorizontalRail(loop);
   return <div className={`vinyl-bin ${albums.length > 1 ? 'has-more-albums' : ''}`} aria-label="Vinyl collection">
     {albums.length > 1 && <span className="vinyl-stack" aria-hidden="true"><i /><i /><i /></span>}
