@@ -115,7 +115,7 @@ test('favorite appearance and labels reach every visual copy without changing ar
   const merged = mergeCollections(books, screen, [makeRow(), makeRow({ media_type: 'screen', media_id: screen[0].id })]);
   const bookMarkup = renderToStaticMarkup(<BookShelf items={merged.books} onOpen={() => {}} />);
   const posterMarkup = renderToStaticMarkup(<PosterWall items={merged.screen} onOpen={() => {}} />);
-  assert.equal((bookMarkup.match(/is-favorite/g) ?? []).length, 1);
+  assert.equal((bookMarkup.match(/is-favorite/g) ?? []).length, 3);
   assert.equal((posterMarkup.match(/is-favorite/g) ?? []).length, 3);
   assert.ok(bookMarkup.includes(`--spine:${books[0].spine}`));
   assert.ok(posterMarkup.includes('personal favorite'));

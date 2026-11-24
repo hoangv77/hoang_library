@@ -1,7 +1,11 @@
 import { useEffect, type RefObject } from 'react';
+import { logicalRailSource } from '../lib/infiniteRail';
 
 export function restoreFocus(element: HTMLElement | null) {
   if (!element?.isConnected) return;
+  element = logicalRailSource(element);
+  const rail = element.closest<HTMLElement>('.horizontal-rail');
+  if (rail) rail.dataset.returningFocus = 'true';
   element.dataset.returningFocus = 'true';
   element.focus({ preventScroll: true });
   requestAnimationFrame(() => { delete element.dataset.returningFocus; });

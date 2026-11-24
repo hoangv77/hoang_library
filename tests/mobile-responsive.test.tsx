@@ -14,26 +14,28 @@ import { albums } from '../src/data/music';
 
 afterEach(cleanup);
 
-test('compact collections retain every original record with an integrated TV and no looping copies', () => {
+test('compact collections loop with one accessible logical record and integrated TV', () => {
   const opened: string[] = [];
   const view = render(<><PosterWall compact items={screen} onOpen={selection => opened.push(screen[selection.index].id)} watching={() => <button>Episode details</button>} /><BookShelf compact items={books} onOpen={selection => opened.push(books[selection.index].id)} /><VinylShelf compact albums={albums} onOpen={selection => opened.push(selection.id)} /></>);
-  assert.equal(view.getAllByText('Episode details').length, 1);
+  assert.equal(view.getAllByRole('button', { name: 'Episode details' }).length, 1);
   for (const [selector, count] of [['.poster-target', screen.length], ['.book-target', books.length], ['.vinyl-target', albums.length]] as const) {
     const buttons = view.container.querySelectorAll<HTMLButtonElement>(selector);
-    assert.equal(buttons.length, count);
+    assert.equal(buttons.length, count * 3);
     assert.equal(new Set([...buttons].map(button => button.dataset.mediaId)).size, count);
-    assert.ok([...buttons].every(button => button.tabIndex === 0 && !button.hasAttribute('aria-hidden')));
-    fireEvent.click(buttons[count - 1]);
+    const logical = [...buttons].filter(button => button.tabIndex === 0 && !button.hasAttribute('aria-hidden'));
+    assert.equal(logical.length, count);
+    assert.ok([...buttons].filter(button => button.hasAttribute('aria-hidden')).every(button => button.tabIndex === -1));
+    fireEvent.click(buttons[buttons.length - 1]);
   }
   assert.deepEqual(opened, [screen.at(-1)!.id, books.at(-1)!.id, albums.at(-1)!.id]);
-  assert.equal(view.container.querySelectorAll('.watching-slot').length, 1);
+  assert.equal(view.container.querySelectorAll('.watching-slot').length, 3);
   assert.equal(view.container.querySelector('.watching-feature'), null);
-  assert.equal(view.container.querySelectorAll('.watching-slot .watching-lower-row .poster-target').length, 2);
-  assert.equal(view.container.querySelectorAll('.poster-column').length, Math.ceil(screen.length / 2) - 1);
+  assert.equal(view.container.querySelectorAll('[data-rail-copy="0"] .watching-slot .watching-lower-row .poster-target').length, 2);
+  assert.equal(view.container.querySelectorAll('[data-rail-copy="0"] .poster-column').length, Math.ceil(screen.length / 2) - 1);
 });
 
 function Rail({ opened }: { opened: () => void }) {
-  const rail = useHorizontalRail(false);
+  const { ref: rail } = useHorizontalRail(false);
   return <div ref={rail} className="horizontal-rail"><button onClick={opened}>Open record</button></div>;
 }
 function touch(target: Element, type: string, x: number, y: number) {
@@ -78,10 +80,11 @@ test('compact vertical wheel input can scroll the page and horizontal input brow
       fireEvent(rail, event); return event;
     };
     assert.equal(wheel(0, 120).defaultPrevented, false); assert.equal(rail.scrollLeft, 0);
-    assert.equal(wheel(120, 0).defaultPrevented, true); assert.equal(rail.scrollLeft, 120);
-    assert.equal(wheel(-80, 0).defaultPrevented, true); assert.equal(rail.scrollLeft, 40);
+    // jsdom has no native default scrolling; verify the event is left to the browser.
+    assert.equal(wheel(120, 0).defaultPrevented, false); assert.equal(rail.scrollLeft, 0);
+    assert.equal(wheel(-80, 0).defaultPrevented, false); assert.equal(rail.scrollLeft, 0);
     compact = false;
-    assert.equal(wheel(0, 120).defaultPrevented, true); assert.equal(rail.scrollLeft, 160);
+    assert.equal(wheel(0, 120).defaultPrevented, true); assert.equal(rail.scrollLeft, 120);
   } finally { window.matchMedia = original; }
 });
 

@@ -1,124 +1,169 @@
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { COMPACT_LAYOUT_QUERY } from './useCompactLayout';
+import { measureRail, railCopiesPerSide, wrapRailPosition, type RailGeometry } from '../lib/infiniteRail';
 
 export function advanceRail(rail: HTMLDivElement, direction: number) {
   const sleeve = rail.querySelector<HTMLElement>('[data-rail-step]');
-  const step = sleeve?.offsetWidth ? sleeve.offsetWidth + (parseFloat(getComputedStyle(sleeve.parentElement!).columnGap) || 0) : 320;
-  rail.scrollBy({ left: direction * step, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+  const step = sleeve?.offsetWidth;
+  const amount = step ? step + (parseFloat(getComputedStyle(sleeve!.parentElement!).columnGap) || 0) : 320;
+  rail.scrollBy({ left: direction * amount, behavior: rail.hasAttribute('data-loop') || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
 }
 
-// One DOM update per frame; scrolling does not rerender every object in the scene.
 export function useHorizontalRail(loop: boolean, curved = false, openingKey?: string) {
   const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
+  const [sides, setSides] = useState(1);
+  const geometry = useRef<RailGeometry | null>(null);
+  const refresh = useRef<() => void>(() => {});
+  const opening = useRef<string | undefined>(undefined);
+  const copies = loop ? Array.from({ length: sides * 2 + 1 }, (_, index) => index - sides) : [0];
+
+  useLayoutEffect(() => {
     const rail = ref.current; if (!rail) return;
     const compactViewport = window.matchMedia(COMPACT_LAYOUT_QUERY);
-    let frame = 0, dragged = false;
-    let wheelEnd: ReturnType<typeof setTimeout> | undefined;
+    let frame = 0, rebaseFrame = 0, dragged = false, nativeTouch = false;
+    let settleTimer: ReturnType<typeof setTimeout> | undefined;
     let start: { x: number; scroll: number; pointer: number } | null = null;
     let touch: { x: number; y: number; id: number } | null = null;
-    const segmentWidth = () => rail.querySelector<HTMLElement>('[data-rail-segment]')?.offsetWidth || rail.scrollWidth / 3;
+    let observed: HTMLElement | null = null;
+    const keyboardItem = () => rail.querySelector('button:focus-visible');
+    const rebase = () => {
+      const measured = geometry.current;
+      if (!loop || !measured || keyboardItem() || rail.dataset.returningFocus) return;
+      const target = wrapRailPosition(rail.scrollLeft, measured), delta = target - rail.scrollLeft;
+      if (Math.abs(delta) < .01) return;
+      rail.dataset.rebasing = 'true';
+      cancelAnimationFrame(rebaseFrame);
+      rail.scrollLeft = target;
+      // Continuing a mouse drag must use the corrected coordinate system.
+      if (start) start.scroll += delta;
+    };
     const update = () => {
       frame = 0;
-      const segment = segmentWidth();
-      // Let Tab keep the actual focused object on screen rather than wrapping to
-      // a decorative copy. Pointer browsing resumes the seamless loop.
-      if (loop && segment > rail.clientWidth && !rail.querySelector('button:focus-visible')) {
-        if (rail.scrollLeft < segment * .5) rail.scrollLeft += segment;
-        else if (rail.scrollLeft >= segment * 1.5) rail.scrollLeft -= segment;
-      }
+      // iOS can undo scrollLeft writes with a finger down. Copies carry the
+      // gesture; recenter at scrollend, preserving native momentum. Only an
+      // unusually long fling needs the emergency guard near a physical edge.
+      const nearEdge = rail.scrollLeft < rail.clientWidth / 2 || rail.scrollLeft > rail.scrollWidth - rail.clientWidth * 1.5;
+      if (!touch && (!nativeTouch || nearEdge)) rebase();
       rail.dataset.overflow = String(rail.scrollWidth > rail.clientWidth + 2);
       if (curved) {
-        const center = rail.getBoundingClientRect().left + rail.clientWidth / 2;
-        rail.querySelectorAll<HTMLElement>('[data-spine]').forEach(el => {
-          const box = el.getBoundingClientRect();
-          const t = Math.max(-1, Math.min(1, (box.left + box.width / 2 - center) / (rail.clientWidth / 2)));
-          el.style.setProperty('--ry', `${-Math.sign(t) * Math.pow(Math.abs(t), 1.35) * 34}deg`);
+        const bounds = rail.getBoundingClientRect(), half = rail.clientWidth / 2;
+        const center = bounds.left + half;
+        const angles: [HTMLElement, number][] = [];
+        // Batch reads before writes, and skip books far outside the viewport.
+        rail.querySelectorAll<HTMLElement>('[data-rail-segment]').forEach(segment => {
+          const segmentBox = segment.getBoundingClientRect();
+          if (segmentBox.right < bounds.left - 200 || segmentBox.left > bounds.right + 200) return;
+          segment.querySelectorAll<HTMLElement>('[data-spine]').forEach(element => {
+            const box = element.getBoundingClientRect();
+            if (box.right < bounds.left - 200 || box.left > bounds.right + 200) return;
+            const t = Math.max(-1, Math.min(1, (box.left + box.width / 2 - center) / Math.max(1, half)));
+            angles.push([element, -Math.sign(t) * Math.pow(Math.abs(t), 1.35) * 34]);
+          });
         });
+        angles.forEach(([element, angle]) => element.style.setProperty('--ry', `${angle}deg`));
       }
+      if (rail.dataset.rebasing) { cancelAnimationFrame(rebaseFrame); rebaseFrame = requestAnimationFrame(() => { delete rail.dataset.rebasing; }); }
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    const settle = () => { if (!touch) { nativeTouch = false; rebase(); schedule(); } };
+    const scroll = () => {
+      schedule(); clearTimeout(settleTimer);
+      // Older-browser fallback for native scrollend.
+      settleTimer = setTimeout(settle, 180);
+    };
+    const measure = () => {
+      const previous = geometry.current, next = loop ? measureRail(rail) : null;
+      if (next) {
+        const phase = previous ? (rail.scrollLeft - previous.origin) / previous.period : 0;
+        geometry.current = next;
+        const needed = railCopiesPerSide(next.period, rail.clientWidth);
+        setSides(value => value === needed ? value : needed);
+        const desired = next.origin + phase * next.period;
+        if (Math.abs(desired - rail.scrollLeft) > .01) rail.scrollLeft = desired;
+      } else geometry.current = null;
+      const canonical = rail.querySelector<HTMLElement>('[data-rail-copy="0"]');
+      if (canonical !== observed) { if (observed) resize.unobserve(observed); if (canonical) resize.observe(canonical); observed = canonical; }
+      schedule();
+    };
+    refresh.current = measure;
     const wheel = (event: WheelEvent) => {
       if (event.ctrlKey || rail.scrollWidth <= rail.clientWidth) return;
-      // A vertical trackpad/wheel gesture scrolls the stacked page on smaller
-      // screens. Horizontal or Shift+wheel input still browses a collection.
+      delete rail.dataset.returningFocus;
       if (compactViewport.matches && !event.shiftKey && Math.abs(event.deltaY) > Math.abs(event.deltaX)) return;
+      // Native horizontal input retains browser/trackpad momentum.
+      if (!event.shiftKey && Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
       event.preventDefault();
-      if (rail.hasAttribute('data-snap-sleeves')) {
-        // Let small trackpad deltas accumulate before settling onto one sleeve.
-        rail.dataset.wheeling = 'true'; clearTimeout(wheelEnd);
-        wheelEnd = setTimeout(() => { delete rail.dataset.wheeling; }, 160);
-      }
       const amount = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-      rail.scrollLeft += amount * (event.deltaMode === 1 ? 20 : event.deltaMode === 2 ? rail.clientWidth : 1);
+      rail.scrollLeft += amount * (event.deltaMode === 1 ? 20 : event.deltaMode === 2 ? rail.clientWidth : 1); schedule();
     };
     const down = (event: PointerEvent) => {
       if (event.button !== 0 || event.pointerType === 'touch') return;
+      nativeTouch = false; delete rail.dataset.returningFocus; rebase();
       start = { x: event.clientX, scroll: rail.scrollLeft, pointer: event.pointerId }; dragged = false;
     };
     const move = (event: PointerEvent) => {
       if (!start) return;
       if (Math.abs(event.clientX - start.x) > 7) {
         dragged = true; rail.dataset.dragging = 'true';
-        rail.setPointerCapture(start.pointer); rail.scrollLeft = start.scroll - (event.clientX - start.x);
+        rail.setPointerCapture(start.pointer); rail.scrollLeft = start.scroll - (event.clientX - start.x); schedule();
       }
     };
     const up = () => { const active = start; start = null; if (active && rail.hasPointerCapture(active.pointer)) rail.releasePointerCapture(active.pointer); rail.dataset.dragging = 'false'; };
-    // Observe native touch gestures without capturing them or cancelling their
-    // default scrolling. Keep the movement flag through touchend/pointercancel
-    // so a browser's compatibility click cannot open a title after a swipe.
     const touchStart = (event: TouchEvent) => {
+      nativeTouch = false; delete rail.dataset.returningFocus; rebase();
       const point = event.touches[0];
       touch = point ? { x: point.clientX, y: point.clientY, id: point.identifier } : null;
-      dragged = event.touches.length > 1;
+      nativeTouch = true; dragged = event.touches.length > 1;
     };
     const touchMove = (event: TouchEvent) => {
       const point = Array.from(event.touches).find(point => point.identifier === touch?.id);
       if (touch && point && Math.hypot(point.clientX - touch.x, point.clientY - touch.y) > 8) dragged = true;
     };
-    const touchEnd = () => { touch = null; };
+    const touchEnd = () => { touch = null; clearTimeout(settleTimer); settleTimer = setTimeout(settle, 180); };
     const click = (event: MouseEvent) => { if (dragged && event.detail !== 0) { event.preventDefault(); event.stopPropagation(); dragged = false; } };
     const preventImageDrag = (event: DragEvent) => event.preventDefault();
     const focus = (event: FocusEvent) => {
       if (event.target instanceof HTMLElement && event.target.dataset.returningFocus) return;
-      if (rail.matches(':focus-within') && event.target instanceof HTMLElement && event.target.matches(':focus-visible')) {
+      if (event.target instanceof HTMLElement && event.target.matches(':focus-visible')) {
         const box = event.target.getBoundingClientRect(), bounds = rail.getBoundingClientRect();
-        // Only move this rail. scrollIntoView also moved the whole page vertically.
         if (box.left < bounds.left || box.right > bounds.right) rail.scrollLeft += box.left + box.width / 2 - bounds.left - bounds.width / 2;
       }
     };
     const key = (event: KeyboardEvent) => {
-      if (event.target !== rail) return;
-      if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
-        event.preventDefault();
-        if (event.key === 'Home') rail.scrollLeft = loop ? segmentWidth() : 0;
-        else if (event.key === 'End') rail.scrollLeft = loop ? segmentWidth() * 2 - rail.clientWidth : rail.scrollWidth;
-        else advanceRail(rail, event.key === 'ArrowLeft' ? -1 : 1);
+      if (event.target !== rail || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault(); nativeTouch = false; delete rail.dataset.returningFocus;
+      const measured = geometry.current;
+      if (event.key === 'Home') rail.scrollLeft = measured?.origin ?? 0;
+      else if (event.key === 'End') {
+        const lastSleeve = rail.querySelector<HTMLElement>('[data-rail-copy="0"] [data-rail-step]:last-child');
+        if (lastSleeve) { const box = lastSleeve.getBoundingClientRect(); rail.scrollLeft += box.left + box.width / 2 - rail.getBoundingClientRect().left - rail.clientWidth / 2; }
+        else rail.scrollLeft = measured ? measured.origin + measured.period - rail.clientWidth : rail.scrollWidth;
       }
+      else { rebase(); advanceRail(rail, event.key === 'ArrowLeft' ? -1 : 1); }
+      schedule();
     };
-    rail.addEventListener('wheel', wheel, { passive: false }); rail.addEventListener('scroll', schedule, { passive: true });
+    const resize = new ResizeObserver(measure);
+    resize.observe(rail); measure();
+    rail.addEventListener('wheel', wheel, { passive: false }); rail.addEventListener('scroll', scroll, { passive: true }); rail.addEventListener('scrollend', settle);
     rail.addEventListener('pointerdown', down); rail.addEventListener('pointermove', move); rail.addEventListener('pointerup', up); rail.addEventListener('pointercancel', up); rail.addEventListener('lostpointercapture', up);
     rail.addEventListener('touchstart', touchStart, { passive: true }); rail.addEventListener('touchmove', touchMove, { passive: true }); rail.addEventListener('touchend', touchEnd, { passive: true }); rail.addEventListener('touchcancel', touchEnd, { passive: true });
-    rail.addEventListener('dragstart', preventImageDrag);
-    rail.addEventListener('click', click, true); rail.addEventListener('keydown', key); rail.addEventListener('focusin', focus);
-    const resize = new ResizeObserver(schedule); resize.observe(rail);
-    if (loop) rail.scrollLeft = segmentWidth();
-    else rail.scrollLeft = 0;
-    if (openingKey) {
-      const startAnchor = rail.querySelector<HTMLElement>('[data-opening-start="true"]');
-      if (startAnchor) rail.scrollLeft += startAnchor.getBoundingClientRect().left - rail.getBoundingClientRect().left - (parseFloat(getComputedStyle(rail).getPropertyValue('--opening-inset')) || 32);
-      const anchor = rail.querySelector<HTMLElement>('[data-opening-center="true"]');
-      if (anchor) {
-        const box = anchor.getBoundingClientRect();
-        rail.scrollLeft += box.left - rail.getBoundingClientRect().left + box.width / 2 - rail.clientWidth / 2;
-      }
-    }
-    update();
+    rail.addEventListener('dragstart', preventImageDrag); rail.addEventListener('click', click, true); rail.addEventListener('keydown', key); rail.addEventListener('focusin', focus);
     return () => {
-      cancelAnimationFrame(frame); clearTimeout(wheelEnd); delete rail.dataset.wheeling; resize.disconnect();
-      rail.removeEventListener('wheel', wheel); rail.removeEventListener('scroll', schedule); rail.removeEventListener('pointerdown', down); rail.removeEventListener('pointermove', move); rail.removeEventListener('pointerup', up); rail.removeEventListener('pointercancel', up); rail.removeEventListener('lostpointercapture', up); rail.removeEventListener('click', click, true); rail.removeEventListener('keydown', key); rail.removeEventListener('focusin', focus);
-      rail.removeEventListener('touchstart', touchStart); rail.removeEventListener('touchmove', touchMove); rail.removeEventListener('touchend', touchEnd); rail.removeEventListener('touchcancel', touchEnd); rail.removeEventListener('dragstart', preventImageDrag);
+      cancelAnimationFrame(frame); cancelAnimationFrame(rebaseFrame); delete rail.dataset.rebasing; clearTimeout(settleTimer); resize.disconnect(); geometry.current = null;
+      rail.removeEventListener('wheel', wheel); rail.removeEventListener('scroll', scroll); rail.removeEventListener('scrollend', settle);
+      rail.removeEventListener('pointerdown', down); rail.removeEventListener('pointermove', move); rail.removeEventListener('pointerup', up); rail.removeEventListener('pointercancel', up); rail.removeEventListener('lostpointercapture', up);
+      rail.removeEventListener('touchstart', touchStart); rail.removeEventListener('touchmove', touchMove); rail.removeEventListener('touchend', touchEnd); rail.removeEventListener('touchcancel', touchEnd);
+      rail.removeEventListener('dragstart', preventImageDrag); rail.removeEventListener('click', click, true); rail.removeEventListener('keydown', key); rail.removeEventListener('focusin', focus);
     };
-  }, [loop, curved, openingKey]);
-  return ref;
+  }, [loop, curved]);
+
+  // Remeasure committed DOM without reinstalling listeners or resetting on edits.
+  useLayoutEffect(() => {
+    refresh.current();
+    const rail = ref.current; if (!rail || !openingKey || opening.current === openingKey || openingKey === 'pending') return;
+    opening.current = openingKey;
+    const anchor = rail.querySelector<HTMLElement>('[data-opening-center="true"]');
+    if (anchor) { const box = anchor.getBoundingClientRect(); rail.scrollLeft += box.left - rail.getBoundingClientRect().left + box.width / 2 - rail.clientWidth / 2; }
+  });
+  return { ref, copies };
 }

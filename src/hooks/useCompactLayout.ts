@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
-// One breakpoint for both CSS layout and the rail's desktop-only looping.
+// Shared breakpoint for responsive layout and vertical wheel propagation.
 export const COMPACT_LAYOUT_QUERY = '(max-width: 1023px)';
 const subscribe = (notify: () => void) => {
   const query = window.matchMedia(COMPACT_LAYOUT_QUERY);

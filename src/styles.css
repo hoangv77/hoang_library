@@ -252,7 +252,7 @@ html { scrollbar-gutter: stable; }
 .collection-shelf { position: absolute; bottom: var(--shelf-bottom); width: 100%; height: 315px; display: flex; align-items: flex-end; z-index: 5; pointer-events: none; }
 .collection-shelf .book-target,.shelf-music .playing-cover,.shelf-music .vinyl-bin,.shelf-music .text-button { pointer-events: auto; }
 /* Gaps between spines must also hit the scrollable book row, not the wall. */
-.collection-shelf .book-row { pointer-events: auto; }
+.collection-shelf .book-rail { pointer-events: auto; }
 .collection-shelf .bookshelf { position: relative; bottom: auto; flex: 1 1 0; min-width: 0; width: auto; }
 .collection-shelf .bookshelf .shelf-surface,.collection-shelf .shelf-ground { display: none; }.collection-shelf .book-row { justify-content: flex-start; padding-inline: 28px; }.shared-shelf-surface { z-index: 0; }
 .shelf-music { --sleeve-size: 140px; position: relative; display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 16px; flex: 0 0 515px; min-width: 0; padding: 0 42px 19px 28px; }
@@ -275,6 +275,11 @@ html { scrollbar-gutter: stable; }
 .vinyl-stack i:nth-child(3) { transform: translateY(-5px) rotate(-1deg); }
 .vinyl-rail { position: relative; height: 100%; padding: 19px 12px 0; z-index: 1; scroll-snap-type: x mandatory; mask-image: linear-gradient(90deg,#0005,black 6%,black 94%,#0005); }
 .vinyl-rail[data-dragging="true"],.vinyl-rail[data-wheeling="true"] { scroll-snap-type: none; }
+.horizontal-rail { overflow-anchor: none; scroll-behavior: auto; }
+.book-segment { flex: 0 0 auto; }
+.book-rail[data-rebasing] .book-object { transition: none; }
+/* Mandatory snapping fights instant loop corrections and native momentum. */
+.vinyl-rail[data-loop] { scroll-snap-type: none; }
 .vinyl-row,.vinyl-segment { display: flex; align-items: flex-end; width: max-content; height: calc(var(--sleeve-size) + 2px); gap: 8px; }.vinyl-row { gap: 0; }.vinyl-segment { flex: 0 0 auto; padding-right: 8px; }
 .vinyl-target { position: relative; width: var(--sleeve-size); height: var(--sleeve-size); flex-shrink: 0; padding: 0; scroll-snap-align: center; transition: transform 650ms var(--ease); perspective: 1000px; }
 .vinyl-sleeve { display: block; width: 100%; height: 100%; position: relative; border: 3px solid #b6a68d; background: #63594b; box-shadow: 2px 2px 3px #24180d80; }
