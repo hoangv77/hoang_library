@@ -372,37 +372,38 @@ html { scrollbar-gutter: stable; }
   .poster-segment { padding: 0; }
   .poster-column { display: contents; }
   .poster-target { flex-shrink: 0; }
-  .collection-shelf { position: relative; order: 2; bottom: auto; height: auto; display: flex; flex-direction: column; align-items: stretch; pointer-events: auto; min-width: 0; }
-  .reading-shortcut { order: 0; padding: 8px 24px 0; color: #76538f; }
+  .collection-shelf { position: relative; order: 2; bottom: auto; height: auto; display: grid; grid-template-columns: clamp(104px,32%,180px) minmax(0,1fr); column-gap: 8px; align-items: end; padding-left: 8px; pointer-events: auto; min-width: 0; }
+  .reading-shortcut { grid-column: 1 / -1; grid-row: 1; padding: 8px 16px 0; color: #76538f; }
   .reading-shortcut button { display: flex; align-items: center; gap: 10px; text-align: left; min-height: 44px; max-width: 100%; font: italic 500 21px/1.25 var(--font-display); }
   .reading-shortcut button > span:first-child { font-size: 28px; text-shadow: 0 0 15px #b793de; }
   .reading-shortcut small { display: block; font-size: .65rem; font-style: normal; margin-bottom: 3px; }
   .reading-shortcut button > span:last-child { overflow-wrap: anywhere; min-width: 0; }
-  .collection-shelf .bookshelf { order: 1; flex: none; width: 100%; height: 335px; }
+  .collection-shelf .bookshelf { grid-column: 2; grid-row: 2; width: 100%; height: 335px; }
   .book-rail { height: 335px; padding-top: 60px; pointer-events: auto; }
-  .collection-shelf .book-row { justify-content: flex-start; padding-inline: 36px; }
-  .collection-shelf .bookshelf .shelf-surface { display: block; }
-  .collection-shelf > .shared-shelf-surface { display: none; }
-  .shelf-music { --sleeve-size: clamp(140px,38vw,180px); order: 2; display: flex; flex-direction: column; align-items: stretch; gap: 30px; flex: none; width: 100%; padding: 32px 0 0; }
-  .playing-space { height: auto; min-height: 0; margin: 0 24px; }
-  .playing-panel { flex-direction: row; align-items: center; gap: 20px; padding: 0; }
-  .playing-cover { width: 88px; height: 88px; border-width: 3px; }
-  .playing-copy { width: auto; }
+  .collection-shelf .book-row { justify-content: flex-start; padding-inline: 16px; }
+  .collection-shelf .bookshelf .shelf-surface { display: none; }
+  .collection-shelf > .shared-shelf-surface { display: block; left: 0; width: 100%; }
+  /* Column-based sleeve sizing stays stable when a dialog locks page scrolling. */
+  .shelf-music { container-type: inline-size; --sleeve-size: calc(100cqw - 24px); grid-column: 1; grid-row: 2; display: flex; flex-direction: column; align-items: stretch; gap: 12px; width: 100%; min-width: 0; padding: 24px 0 19px; }
+  .playing-space { height: auto; min-height: 0; margin: 0 8px; }
+  .playing-panel { flex-direction: column; align-items: flex-start; gap: 10px; padding: 0; }
+  .playing-cover { width: min(88px,100%); height: auto; aspect-ratio: 1; border-width: 3px; }
+  .playing-copy { width: 100%; overflow-wrap: anywhere; }
   .playing-copy .active-label { font-size: .65rem; letter-spacing: .08em; margin-bottom: 7px; }
   .playing-song { font-size: 28px; -webkit-line-clamp: 3; margin-bottom: 6px; }
   .playing-copy .active-subtitle { font-size: .9rem; white-space: normal; overflow: visible; }
   .playing-album { font-size: .8rem; -webkit-line-clamp: 2; margin-top: 4px; }
   .music-indicator { height: 15px; margin-top: 8px; }
-  .album-browser { width: 100%; padding-top: 8px; }
+  .album-browser { width: 100%; padding-top: 0; }
   .vinyl-bin { width: 100%; height: calc(var(--sleeve-size) + 65px); }
-  .vinyl-rail { padding: 28px 24px 0; scroll-padding-inline: 24px; mask-image: none; scroll-snap-type: x proximity; }
+  .vinyl-rail { padding: 28px 8px 0; scroll-padding-inline: 8px; mask-image: none; scroll-snap-type: x proximity; }
   .vinyl-target { scroll-snap-align: start; }
   .vinyl-row,.vinyl-segment { height: calc(var(--sleeve-size) + 2px); gap: 18px; }
   .vinyl-segment { padding-right: 0; }
   .vinyl-back { top: 36px; }
   .vinyl-stack { display: none; }
   .vinyl-lip { left: 0; right: 0; height: 25px; }
-  .add-album-action { position: relative; display: block; top: auto; right: auto; margin: 12px 24px 0 auto; font-size: .85rem; padding: 8px; }
+  .add-album-action { position: relative; display: block; top: auto; right: auto; margin: 8px 0 0; font-size: .85rem; padding: 8px; }
   .music-load-error,.current-load-error { position: relative; bottom: auto; left: auto; padding: 12px 24px; }
   .scene-footer { position: relative; order: 3; inset: auto; width: 100%; height: auto; padding: 34px 24px 24px; display: flex; flex-direction: column; align-items: stretch; gap: 24px; }
   .scene-guidance { position: static; transform: none; width: 100%; display: grid; grid-template-columns: minmax(0,1fr); gap: 20px; }
