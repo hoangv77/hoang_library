@@ -14,7 +14,7 @@ import { albums } from '../src/data/music';
 
 afterEach(cleanup);
 
-test('compact collections retain every original record with one featured TV and no looping copies', () => {
+test('compact collections retain every original record with an integrated TV and no looping copies', () => {
   const opened: string[] = [];
   const view = render(<><PosterWall compact items={screen} onOpen={selection => opened.push(screen[selection.index].id)} watching={() => <button>Episode details</button>} /><BookShelf compact items={books} onOpen={selection => opened.push(books[selection.index].id)} /><VinylShelf compact albums={albums} onOpen={selection => opened.push(selection.id)} /></>);
   assert.equal(view.getAllByText('Episode details').length, 1);
@@ -26,7 +26,10 @@ test('compact collections retain every original record with one featured TV and 
     fireEvent.click(buttons[count - 1]);
   }
   assert.deepEqual(opened, [screen.at(-1)!.id, books.at(-1)!.id, albums.at(-1)!.id]);
-  assert.equal(view.container.querySelector('.watching-slot'), null);
+  assert.equal(view.container.querySelectorAll('.watching-slot').length, 1);
+  assert.equal(view.container.querySelector('.watching-feature'), null);
+  assert.equal(view.container.querySelectorAll('.watching-slot .watching-lower-row .poster-target').length, 2);
+  assert.equal(view.container.querySelectorAll('.poster-column').length, Math.ceil(screen.length / 2) - 1);
 });
 
 function Rail({ opened }: { opened: () => void }) {
