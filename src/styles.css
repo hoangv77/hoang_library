@@ -354,8 +354,10 @@ html { scrollbar-gutter: stable; }
 
 /* Keep the layered wall and foreground shelf; only compact the mobile music. */
 @media (max-width: 719px) {
-  .shelf-music { --sleeve-size: 72px; flex-basis: clamp(184px,calc(50% + 20px),208px); display: flex; flex-direction: column; align-items: flex-end; gap: 8px; padding: 0 8px 19px 0; }
-  .collection-shelf .book-rail { width: calc(100% + 8px); margin-left: -8px; }
+  /* Move both hit areas equally so the music/book boundary stays clear. */
+  .collection-shelf { --mobile-shelf-shift: clamp(24px,9vw,40px); }
+  .shelf-music { --sleeve-size: 72px; flex-basis: clamp(184px,calc(50% + 20px),208px); display: flex; flex-direction: column; align-items: flex-end; gap: 8px; padding: 0 8px 19px 0; transform: translateX(calc(-1 * var(--mobile-shelf-shift))); }
+  .collection-shelf .book-rail { width: calc(100% + 8px + var(--mobile-shelf-shift)); margin-left: calc(-8px - var(--mobile-shelf-shift)); }
   .playing-space { width: calc(var(--sleeve-size) + 24px); height: auto; min-height: 0; margin: 0; }
   .playing-panel { flex-direction: row; align-items: flex-start; gap: 6px; padding: 0; }
   .playing-cover { width: 32px; height: 32px; border-width: 2px; }
